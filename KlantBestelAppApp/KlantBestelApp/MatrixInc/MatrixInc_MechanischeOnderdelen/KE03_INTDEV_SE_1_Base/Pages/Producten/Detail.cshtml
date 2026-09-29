@@ -1,0 +1,127 @@
+@page "{id:int}"
+@model KE03_INTDEV_SE_1_Base.Pages.Producten.DetailModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Producten/Detail.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+
+@* EXTRA BEGINNER-UITLEG
+   - @page betekent: dit bestand is een Razor Page die direct via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen <section>, <div>, <article> en <form> is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+@* {id:int} betekent dat deze pagina een product-id verwacht in de URL.
+   Voorbeeld: /Producten/Detail/3 laadt product met Id 3. *@
+@{
+    ViewData["Title"] = Model.Product?.Naam ?? "Product";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Producten/detail.css" asp-append-version="true" />
+}
+@* PAGINA-UITLEG VOOR JUNIOR
+   Use case: UC01 Product bekijken en UC02 Product toevoegen aan winkelmand.
+   Model-relatie: Model.Product is één Product uit de database.
+   Formulier-relatie: het formulier stuurt ProductId en Aantal naar OnPost() in Detail.cshtml.cs.
+   Daarna wordt een WinkelmandItem in Session opgeslagen. *@
+
+
+<!-- Productdetailpagina. Hier bekijkt de klant één product en kiest hij een aantal. -->
+@* IF-CONTROLE
+   Als Model.Product null is, is er geen product gevonden.
+   Dan tonen we een duidelijke melding in plaats van een foutmelding. *@
+@if (Model.Product == null)
+{
+    <section class="card detail-empty">
+        <i data-lucide="circle-alert"></i>
+        <h1>Product niet gevonden</h1>
+        <p class="muted">Het gekozen product bestaat niet of is niet meer beschikbaar.</p>
+        <a class="button" asp-page="/Producten/Overzicht"><i data-lucide="arrow-left"></i> Terug naar producten</a>
+    </section>
+}
+else
+{
+    @* Vanaf hier weten we zeker dat Model.Product bestaat.
+       Daarom mogen we eigenschappen gebruiken zoals Model.Product.Naam en Model.Product.Prijs. *@
+    <a class="back-link" asp-page="/Producten/Overzicht"><i data-lucide="arrow-left"></i> Terug naar producten</a>
+
+    <section class="detail-layout">
+        <div class="product-visual card">
+            @* Grote productvisual als Lucide-icoon.
+               Relatie: Model.Product.Icoon komt uit Product.cs en wordt door Lucide omgezet naar een SVG-icoon. *@
+            <div class="big-icon"><i data-lucide="@Model.Product.Icoon"></i></div>
+            <div class="mini-icons">
+                <span><i data-lucide="box"></i></span>
+                <span><i data-lucide="ruler"></i></span>
+                <span><i data-lucide="shield-check"></i></span>
+            </div>
+        </div>
+
+        <article class="product-info card">
+            <span class="badge"><i data-lucide="tag"></i> @Model.Product.Categorie</span>
+            <h1>@Model.Product.Naam</h1>
+            <p class="muted">@Model.Product.Omschrijving</p>
+
+            <div class="rating-row">
+                <i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star-half"></i>
+                <span class="muted">4,5 / 5 op basis van klantbeoordelingen</span>
+            </div>
+
+            <ul class="detail-points">
+                <li><i data-lucide="factory"></i> Merk: <strong>@Model.Product.Merk</strong></li>
+                <li><i data-lucide="hash"></i> Artikelnummer: <strong>@Model.Product.Artikelnummer</strong></li>
+                <li><i data-lucide="package-check"></i> Voorraad: <strong>@Model.Product.Voorraad stuks</strong></li>
+                <li><i data-lucide="truck"></i> Levering: <strong>@Model.Product.Levertijd</strong></li>
+            </ul>
+
+            <div class="buy-box">
+                <div>
+                    <span class="muted">Prijs per stuk</span>
+                    <div class="price">€ @Model.Product.Prijs.ToString("0.00")</div>
+                </div>
+
+                <!-- UC02 Product toevoegen: de klant kan hier zelf een aantal invullen. Er is bewust geen maximum ingesteld. -->
+                @* FORMULIER PRODUCTDETAIL
+                    Dit formulier hoort bij UC02.
+                    De klant kiest een aantal en drukt op In winkelmand.
+                    De OnPost() methode in Detail.cshtml.cs verwerkt dit formulier. *@
+                <form method="post" class="add-form">
+                    @* asp-for="ProductId" koppelt dit hidden veld aan de C# property ProductId.
+                       Hidden omdat de klant dit id niet hoeft te zien, maar de server het wel nodig heeft. *@
+                    <input type="hidden" asp-for="ProductId" />
+                    <label for="Aantal">Aantal</label>
+                    @* asp-for="Aantal" koppelt het invoerveld aan de C# property Aantal.
+                       min="1" voorkomt dat iemand 0 of negatieve aantallen kiest.
+                       Er is geen max, dus de klant kan zelf veel stuks bestellen. *@
+                    <input asp-for="Aantal" min="1" class="quantity-input" />
+                    <button type="submit"><i data-lucide="shopping-cart"></i> In winkelmand</button>
+                </form>
+            </div>
+        </article>
+    </section>
+
+    <section class="spec-grid">
+        <article class="card spec-card">
+            <h2><i data-lucide="clipboard-list"></i> Specificaties</h2>
+            <dl>
+                <dt>Materiaal</dt><dd>@Model.Product.Materiaal</dd>
+                <dt>Afmeting</dt><dd>@Model.Product.Afmeting</dd>
+                <dt>Categorie</dt><dd>@Model.Product.Categorie</dd>
+                <dt>Merk</dt><dd>@Model.Product.Merk</dd>
+            </dl>
+        </article>
+        <article class="card spec-card">
+            <h2><i data-lucide="shield-check"></i> Zeker bestellen</h2>
+            <p class="muted">Duidelijke voorraad, herkenbaar artikelnummer en een simpele winkelmand maken het bestellen overzichtelijk.</p>
+            <ul>
+                <li><i data-lucide="check"></i> Voorraad zichtbaar</li>
+                <li><i data-lucide="check"></i> Aantal zelf kiezen</li>
+                <li><i data-lucide="check"></i> Bestelling terug te vinden in orderhistorie</li>
+            </ul>
+        </article>
+    </section>
+}

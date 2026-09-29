@@ -1,0 +1,22 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/producten/verwijderen.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/producten/verwijderen.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Producten/Verwijderen.cshtml */
+.confirm-card {
+    margin-inline: auto;
+    background: linear-gradient(180deg, #fff7ed, #fff);
+    border-color: #fed7aa;
+}
+
+.confirm-card h1 {
+    font-weight: 800;
+}

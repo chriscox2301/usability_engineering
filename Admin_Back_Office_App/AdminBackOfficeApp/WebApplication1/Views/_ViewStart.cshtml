@@ -1,0 +1,16 @@
+@*
+    TECHNISCHE VIEW-UITLEG
+    Bestand: Views/_ViewStart.cshtml
+    Deze Razor View wordt aangeroepen door de controller/action met dezelfde mapnaam.
+    Tag helpers zoals asp-controller, asp-action en asp-route-id genereren veilige MVC-links.
+*@
+@*
+    JUNIOR-UITLEG Views/_ViewStart.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{
+    // Elke View gebruikt standaard dezelfde layout.
+    // Hierdoor heeft iedere pagina dezelfde sidebar, header en footer.
+    Layout = "_Layout";
+}

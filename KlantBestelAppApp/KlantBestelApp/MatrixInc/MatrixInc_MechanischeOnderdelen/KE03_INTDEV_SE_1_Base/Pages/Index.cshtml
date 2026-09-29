@@ -1,0 +1,104 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.StartModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Index.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+
+@* EXTRA BEGINNER-UITLEG
+   - @page betekent: dit bestand is een Razor Page die direct via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen <section>, <div>, <article> en <form> is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+@{
+    ViewData["Title"] = "Start";
+}
+@* Deze Styles-section koppelt alleen de CSS van de startpagina.
+   Zo blijft CSS per pagina overzichtelijk gescheiden. *@
+@section Styles {
+    <link rel="stylesheet" href="~/css/Start/start.css" asp-append-version="true" />
+}
+@* PAGINA-UITLEG VOOR JUNIOR
+   Doel: homepagina van de webshop.
+   Relatie: stuurt bezoekers naar Producten/Overzicht, Winkelmand en Service.
+   Logica: geen C# logica; deze pagina is vooral HTML en CSS. *@
+
+
+<!-- Homepagina van Matrix inc. De pagina verwijst naar de werkende productflow. -->
+@* HERO-SECTIE
+   Dit is het grote bovenste gedeelte van de homepagina.
+   Doel: bezoeker direct uitleggen wat Matrix inc. verkoopt en waar hij kan beginnen. *@
+<section class="hero">
+    <div class="hero-content">
+        <span class="badge"><i data-lucide="factory"></i> Voor machinebouw en onderhoud</span>
+        <h1>Mechanische onderdelen snel gevonden en eenvoudig besteld.</h1>
+        <p>Bouten, lagers, tandwielen, afdichtingen en gereedschap voor werkplaats, montage en reparatie.</p>
+        @* Actieknoppen op de homepagina.
+           De belangrijkste knop gaat naar Producten/Overzicht, omdat UC01 begint met producten bekijken. *@
+        <div class="hero-actions">
+            <a class="button yellow" asp-page="/Producten/Overzicht"><i data-lucide="package-search"></i> Bekijk producten</a>
+            <!-- Orderhistorie-knop op de homepagina.
+                 Relatie met UC04: de klant kan vanaf de startpagina direct eerdere bestellingen bekijken. -->
+            <a class="button secondary" asp-page="/Bestellingen/Geschiedenis"><i data-lucide="history"></i> Bekijk orderhistorie</a>
+            <a class="button secondary" asp-page="/Service/VeelgesteldeVragen"><i data-lucide="headphones"></i> Hulp nodig?</a>
+        </div>
+    </div>
+    <div class="hero-card card">
+        <strong><i data-lucide="trending-up"></i> Populair vandaag</strong>
+        <a class="hero-product" asp-page="/Producten/Overzicht" asp-route-categorie="Bevestiging"><i data-lucide="bolt"></i><p>M8 Boutenset<br /><small>Morgen geleverd</small></p></a>
+        <a class="hero-product" asp-page="/Producten/Overzicht" asp-route-categorie="Lagers"><i data-lucide="circle-dot"></i><p>Kogellager 608ZZ<br /><small>Veel op voorraad</small></p></a>
+        <a class="hero-product" asp-page="/Producten/Overzicht" asp-route-categorie="Gereedschap"><i data-lucide="wrench"></i><p>Momentsleutel<br /><small>Voor montage</small></p></a>
+    </div>
+</section>
+
+@* USP-rij: dit zijn verkoopvoordelen zoals moderne webshops gebruiken.
+   Dit is vooral HTML/CSS voor uitstraling; hier zit geen C# logica achter. *@
+<section class="usp-row" aria-label="Voordelen">
+    <div><i data-lucide="truck"></i><strong>Snelle levering</strong><span>Veel onderdelen morgen in huis</span></div>
+    <div><i data-lucide="shield-check"></i><strong>Duidelijke kwaliteit</strong><span>Merk, materiaal en artikelnummer zichtbaar</span></div>
+    <div><i data-lucide="shopping-cart"></i><strong>Eenvoudig bestellen</strong><span>Voeg producten toe en plaats je bestelling</span></div>
+    <div><i data-lucide="rotate-ccw"></i><strong>Retour mogelijk</strong><span>Retourinformatie staat bij service</span></div>
+</section>
+
+<section class="section-heading">
+    <h2>Categorieën</h2>
+    <p class="muted">Kies direct een categorie of bekijk alle producten.</p>
+</section>
+
+@* Categoriekaarten.
+   Elke kaart linkt naar dezelfde productenpagina, maar met een categorie in de URL.
+   Voorbeeld: ?categorie=Lagers. De PageModel gebruikt deze waarde om te filteren. *@
+<div class="category-grid">
+    <a class="category-card card" asp-page="/Producten/Overzicht" asp-route-categorie="Bevestiging"><i data-lucide="bolt"></i><strong>Bevestiging</strong><small>Bouten, moeren en ringen</small></a>
+    <a class="category-card card" asp-page="/Producten/Overzicht" asp-route-categorie="Lagers"><i data-lucide="circle-dot"></i><strong>Lagers</strong><small>Kogellagers en geleiding</small></a>
+    <a class="category-card card" asp-page="/Producten/Overzicht" asp-route-categorie="Aandrijving"><i data-lucide="settings"></i><strong>Aandrijving</strong><small>Tandwielen en V-snaren</small></a>
+    <a class="category-card card" asp-page="/Producten/Overzicht" asp-route-categorie="Hydrauliek"><i data-lucide="droplets"></i><strong>Hydrauliek</strong><small>Slangen en koppelingen</small></a>
+</div>
+
+@* Promoblokken voor extra webshopgevoel.
+   Deze blokken zijn voor de sier en hoeven geen use case te ondersteunen. *@
+<section class="promo-grid">
+    <article class="promo-card card">
+        <i data-lucide="badge-percent"></i>
+        <h2>Werkplaatsvoordeel</h2>
+        <p class="muted">Bekijk veelgebruikte onderdelen voor onderhoud en montage.</p>
+        <a asp-page="/Producten/Overzicht">Bekijk assortiment</a>
+    </article>
+    <article class="promo-card card">
+        <i data-lucide="clipboard-check"></i>
+        <h2>Bestelling controleren</h2>
+        <p class="muted">In de winkelmand zie je direct het aantal producten en het totaalbedrag.</p>
+        <a asp-page="/Winkelmand/Overzicht">Naar winkelmand</a>
+    </article>
+    <article class="promo-card card">
+        <i data-lucide="history"></i>
+        <h2>Orderhistorie</h2>
+        <p class="muted">Bekijk na het bestellen je eerder geplaatste bestellingen en ordernummers.</p>
+        <a asp-page="/Bestellingen/Geschiedenis">Bekijk orderhistorie</a>
+    </article>
+</section>

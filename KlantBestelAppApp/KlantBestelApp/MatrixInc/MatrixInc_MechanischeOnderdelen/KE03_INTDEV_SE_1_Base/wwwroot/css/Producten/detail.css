@@ -1,0 +1,48 @@
+/* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/wwwroot/css/Producten/detail.css
+   Dit CSS-bestand hoort bij één pagina of onderdeel en regelt alleen de vormgeving.
+   Er staat geen C# logica in CSS. */
+/* OPBOUW VAN DIT CSS-BESTAND
+   - Selectors zoals .card of .hero verwijzen naar class="card" of class="hero" in de bijbehorende .cshtml pagina.
+   - CSS verandert alleen vormgeving: kleur, ruimte, grootte, grid/flex en responsive gedrag.
+   - CSS verandert geen data, winkelmand of bestelling. Die logica staat in de .cshtml.cs bestanden. */
+
+
+
+/* CSS voor Producten/Detail.cshtml. Doel: één product duidelijk tonen met aantalkeuze. */
+.back-link { display: inline-flex; align-items: center; gap: .4rem; color: var(--blue-dark); font-weight: 700; margin-bottom: 1rem; }
+.detail-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 1rem; align-items: start; }
+.product-visual { padding: 1.5rem; display: grid; gap: 1rem; }
+.big-icon {
+    /* Grote productvisual met Lucide SVG-icoon. */
+    min-height: 360px;
+    display: grid;
+    place-items: center;
+    background: #f8fafc;
+    border-radius: 18px;
+    color: var(--blue-dark);
+}
+.big-icon svg { width: 150px; height: 150px; stroke-width: 1.5; }
+.mini-icons { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; }
+.mini-icons span { height: 70px; border: 1px solid var(--line); border-radius: 14px; display: grid; place-items: center; background: white; }
+.mini-icons svg { color: var(--blue); }
+.product-info { padding: 1.5rem; }
+.product-info h1 { font-size: clamp(2rem, 4vw, 3rem); margin: .6rem 0; }
+.rating-row { display: flex; align-items: center; gap: .25rem; color: #f59e0b; margin: .8rem 0 1.2rem; flex-wrap: wrap; }
+.rating-row span { margin-left: .4rem; }
+.detail-points { list-style: none; padding: 0; margin: 0 0 1.2rem; display: grid; gap: .6rem; }
+.detail-points li { display: flex; align-items: center; gap: .5rem; }
+.detail-points svg { color: var(--blue); }
+.buy-box { border-top: 1px solid var(--line); padding-top: 1rem; display: flex; justify-content: space-between; align-items: end; gap: 1rem; }
+.add-form { display: grid; grid-template-columns: 100px auto; gap: .6rem; align-items: end; }
+.add-form label { grid-column: 1 / -1; font-weight: 700; }
+.quantity-input { border: 1px solid var(--line); border-radius: 10px; padding: .75rem; width: 100%; }
+.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+.spec-card { padding: 1.2rem; }
+.spec-card h2 { display: flex; align-items: center; gap: .4rem; }
+dl { display: grid; grid-template-columns: 140px 1fr; gap: .65rem; }
+dt { font-weight: 700; }
+dd { margin: 0; color: var(--muted); }
+.spec-card ul { list-style: none; padding: 0; display: grid; gap: .45rem; }
+.spec-card li { display: flex; align-items: center; gap: .35rem; }
+.detail-empty { padding: 2rem; text-align:center; }
+@media (max-width: 850px) { .detail-layout, .spec-grid { grid-template-columns: 1fr; } .buy-box { display:grid; } .add-form { grid-template-columns:1fr; } }

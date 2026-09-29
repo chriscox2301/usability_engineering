@@ -1,0 +1,116 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Winkelmand.OverzichtModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Winkelmand/Overzicht.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+
+@* EXTRA BEGINNER-UITLEG
+   - @page betekent: dit bestand is een Razor Page die direct via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen <section>, <div>, <article> en <form> is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+@{
+    ViewData["Title"] = "Winkelmand";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Winkelmand/overzicht.css" asp-append-version="true" />
+}
+@* PAGINA-UITLEG VOOR JUNIOR
+   Use case: onderdeel van UC02 en voorbereiding op UC03.
+   Model-relatie: Model.Items is een List<WinkelmandItem> uit Session.
+   Formulier-relatie: de knop Verwijderen roept OnPostVerwijderen(productId) aan. Het aantallenformulier roept OnPostAantalAanpassen(productId, aantal) aan. *@
+
+
+<!-- Winkelmand toont de tijdelijk gekozen producten. Dit ondersteunt UC02 en bereidt UC03 voor. -->
+<div class="page-title">
+    <span class="badge">Winkelmand</span>
+    <h1>Jouw winkelmand</h1>
+    <p class="muted">Controleer je producten voordat je de bestelling plaatst.</p>
+</div>
+
+@* Deze if controleert of de winkelmand leeg is.
+   Model.Items komt uit Session via Overzicht.cshtml.cs.
+   Any() betekent: staan er één of meer items in de lijst? *@
+@if (!Model.Items.Any())
+{
+    <section class="empty-card card">
+        <i data-lucide="shopping-cart"></i>
+        <h2>Je winkelmand is leeg</h2>
+        <p class="muted">Voeg eerst producten toe om een bestelling te kunnen plaatsen.</p>
+        <a class="button" asp-page="/Producten/Overzicht">Bekijk producten</a>
+    </section>
+}
+else
+{
+    <section class="cart-layout">
+        <div class="cart-list card">
+            @* Voor elk WinkelmandItem in de winkelmand tonen we één regel.
+               Relatie: WinkelmandItem bevat productnaam, prijs, aantal en subtotaal. *@
+            @foreach (var item in Model.Items)
+            {
+                <div class="cart-item">
+                    @* Producticoon in de winkelmand.
+                       Relatie: item.Icoon komt uit WinkelmandItem en is overgenomen van Product.Icoon. *@
+                    <div class="cart-icon"><i data-lucide="@item.Icoon"></i></div>
+                    <div>
+                        <h2>@item.ProductNaam</h2>
+                        <p class="muted">@item.Omschrijving</p>
+                        @* RELATIE MET UC02:
+                           De klant heeft dit product eerder toegevoegd aan de winkelmand.
+                           Met onderstaand formulier kan de klant het aantal aanpassen zonder terug te gaan naar de productpagina.
+                           Dit formulier roept in Overzicht.cshtml.cs de handler OnPostAantalAanpassen(...) aan. *@
+                        @* AANTAL WIJZIGEN
+                           Dit formulier wijzigt alleen het aantal van dit WinkelmandItem.
+                           asp-page-handler="AantalAanpassen" roept OnPostAantalAanpassen(...) aan in Overzicht.cshtml.cs. *@
+                        <form class="quantity-form" method="post" asp-page-handler="AantalAanpassen">
+                            @* productId is nodig zodat C# weet welk item in de winkelmand aangepast moet worden. *@
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <label for="aantal-@item.ProductId">Aantal</label>
+                            <div class="quantity-row">
+                                @* Hier kan de klant het nieuwe aantal typen.
+                                   value="@item.Aantal" vult het huidige aantal alvast in. *@
+                                <input id="aantal-@item.ProductId" name="aantal" type="number" min="1" value="@item.Aantal" />
+                                <button class="small-button" type="submit">Bijwerken</button>
+                            </div>
+                            <small class="muted">Minimaal 1 stuk. Er is bewust geen maximum ingesteld.</small>
+                        </form>
+
+                        @* RELATIE MET WINKELMANDITEM:
+                           Verwijderen haalt het hele WinkelmandItem uit de tijdelijke winkelmand in Session. *@
+                        @* VERWIJDEREN
+                           Dit formulier verwijdert het volledige item uit de winkelmand.
+                           asp-page-handler="Verwijderen" roept OnPostVerwijderen(productId) aan. *@
+                        <form method="post" asp-page-handler="Verwijderen">
+                            @* productId is nodig zodat C# weet welk item in de winkelmand aangepast moet worden. *@
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <button class="link-button" type="submit">Verwijderen</button>
+                        </form>
+                    </div>
+                    <div class="cart-price">
+                        <span>@item.Aantal x € @item.Prijs.ToString("0.00")</span>
+                        <strong>€ @item.Subtotaal.ToString("0.00")</strong>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @* SAMENVATTING
+           Hier ziet de klant het totaalbedrag voordat hij naar Bestelling plaatsen gaat.
+           Dit bereidt UC03 voor. *@
+        <aside class="summary card">
+            <h2>Overzicht</h2>
+            <div><span>Subtotaal</span><strong>€ @Model.Totaal.ToString("0.00")</strong></div>
+            <div><span>Verzending</span><strong>Gratis</strong></div>
+            <hr />
+            <div class="total"><span>Totaal</span><strong>€ @Model.Totaal.ToString("0.00")</strong></div>
+            <a class="button" asp-page="/Bestellingen/Plaatsen">Bestelling plaatsen</a>
+            <a class="button secondary" asp-page="/Producten/Overzicht">Verder winkelen</a>
+        </aside>
+    </section>
+}

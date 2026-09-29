@@ -1,0 +1,22 @@
+/* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/wwwroot/css/Contact/contactformulier.css
+   Dit CSS-bestand hoort bij één pagina of onderdeel en regelt alleen de vormgeving.
+   Er staat geen C# logica in CSS. */
+/* OPBOUW VAN DIT CSS-BESTAND
+   - Selectors zoals .card of .hero verwijzen naar class="card" of class="hero" in de bijbehorende .cshtml pagina.
+   - CSS verandert alleen vormgeving: kleur, ruimte, grootte, grid/flex en responsive gedrag.
+   - CSS verandert geen data, winkelmand of bestelling. Die logica staat in de .cshtml.cs bestanden. */
+
+
+
+/* CSS voor Contact/Contactformulier.cshtml. Doel: contactpagina netjes vormgeven. */
+.contact-layout { display: grid; grid-template-columns: 1fr 330px; gap: 1rem; margin-top: 1rem; align-items: start; }
+.contact-card, .contact-side { padding: 1.5rem; }
+.contact-card h1 { font-size:2.4rem; margin:.5rem 0; }
+.contact-card input, .contact-card textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: .85rem; margin: .35rem 0 1rem; }
+.contact-card textarea { min-height: 130px; }
+.contact-card label { font-weight: 800; display:flex; align-items:center; gap:.4rem; }
+.contact-card label svg, .contact-side svg { color: var(--blue); }
+.contact-side h2 { display:flex; align-items:center; gap:.4rem; }
+.contact-side ul { list-style:none; padding:0; display:grid; gap:.55rem; }
+.contact-side li { display:flex; align-items:center; gap:.45rem; color:var(--muted); }
+@media (max-width: 850px) { .contact-layout { grid-template-columns: 1fr; } }

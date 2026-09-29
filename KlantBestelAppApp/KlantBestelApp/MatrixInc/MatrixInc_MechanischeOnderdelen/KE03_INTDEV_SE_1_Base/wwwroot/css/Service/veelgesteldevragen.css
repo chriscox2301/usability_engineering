@@ -1,0 +1,20 @@
+/* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/wwwroot/css/Service/veelgesteldevragen.css
+   Dit CSS-bestand hoort bij één pagina of onderdeel en regelt alleen de vormgeving.
+   Er staat geen C# logica in CSS. */
+/* OPBOUW VAN DIT CSS-BESTAND
+   - Selectors zoals .card of .hero verwijzen naar class="card" of class="hero" in de bijbehorende .cshtml pagina.
+   - CSS verandert alleen vormgeving: kleur, ruimte, grootte, grid/flex en responsive gedrag.
+   - CSS verandert geen data, winkelmand of bestelling. Die logica staat in de .cshtml.cs bestanden. */
+
+
+
+/* CSS voor Service/VeelgesteldeVragen.cshtml. Doel: servicepagina als echte webshop laten voelen. */
+.service-hero { padding: 2rem; margin-top: 1rem; text-align:center; }
+.service-hero > svg { color: var(--blue); width: 46px; height:46px; }
+.service-hero h1 { margin: .5rem 0; font-size: 2.4rem; }
+.faq-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem; }
+.faq-grid article { padding: 1.2rem; }
+.faq-grid article > svg { color: var(--blue); width: 34px; height:34px; }
+.faq-grid h2 { font-size:1.1rem; }
+@media (max-width: 1050px) { .faq-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 850px) { .faq-grid { grid-template-columns: 1fr; } }

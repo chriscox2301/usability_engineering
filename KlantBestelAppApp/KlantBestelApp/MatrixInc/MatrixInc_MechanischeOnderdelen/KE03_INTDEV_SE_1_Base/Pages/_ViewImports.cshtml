@@ -1,0 +1,22 @@
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/_ViewImports.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+@* EXTRA BEGINNER-UITLEG
+   - @page betekent: dit bestand is een Razor Page die direct via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen <section>, <div>, <article> en <form> is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+@using KE03_INTDEV_SE_1_Base
+@using DataAccessLayer.Models
+@namespace KE03_INTDEV_SE_1_Base.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@* BEGINNER-UITLEG _ViewImports
+   @using DataAccessLayer.Models zorgt dat Razor Pages de Nederlandse modelklassen zoals Product en WinkelmandItem kunnen herkennen.
+   @addTagHelper maakt asp-page, asp-for en asp-route mogelijk in .cshtml bestanden.
+*@

@@ -1,0 +1,72 @@
+@model List<Klacht>
+@{
+    ViewData["Title"] = "Klantenservice";
+    var openstaand = Model.Count(k => k.IsOpenstaand());
+}
+@section Styles { <link rel="stylesheet" href="~/css/klantenservice/index.css" asp-append-version="true" /> }
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Klantenservice</p>
+        <h1>Klachtenoverzicht</h1>
+        <p>Bekijk welke klachten nog openstaan en welke al zijn afgehandeld.</p>
+    </div>
+    <div class="service-summary">
+        <span class="badge badge-danger">@openstaand openstaand</span>
+    </div>
+</section>
+
+<section class="table-card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Klacht</th>
+                <th>Klant</th>
+                <th>Order</th>
+                <th>Onderwerp</th>
+                <th>Datum</th>
+                <th>Status</th>
+                <th>Prioriteit</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var klacht in Model)
+        {
+            <tr class="@(klacht.IsOpenstaand() ? "open-row" : "")">
+                <td><strong>@klacht.Klachtnummer</strong><small class="muted">@klacht.Email</small></td>
+                <td>@klacht.KlantNaam</td>
+                <td>@klacht.Ordernummer</td>
+                <td><strong>@klacht.Onderwerp</strong><small class="muted">@klacht.Omschrijving</small></td>
+                <td>@klacht.Datum.ToString("dd-MM-yyyy HH:mm")</td>
+                <td><span class="badge @StatusBadgeClass(klacht.Status)">@klacht.Status</span></td>
+                <td><span class="badge @PrioriteitBadgeClass(klacht.Prioriteit)">@klacht.Prioriteit</span></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</section>
+
+
+@functions {
+    private static string StatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Open" => "badge-status-open",
+            "In behandeling" => "badge-status-progress",
+            "Afgehandeld" => "badge-status-done",
+            _ => "badge-soft"
+        };
+    }
+
+    private static string PrioriteitBadgeClass(string prioriteit)
+    {
+        return prioriteit switch
+        {
+            "Hoog" => "badge-priority-high",
+            "Normaal" => "badge-priority-normal",
+            "Laag" => "badge-priority-low",
+            _ => "badge-soft"
+        };
+    }
+}

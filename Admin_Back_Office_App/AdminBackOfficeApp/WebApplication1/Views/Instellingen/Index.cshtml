@@ -1,0 +1,15 @@
+@*
+    JUNIOR-UITLEG Views/Instellingen/Index.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{ ViewData["Title"] = "Instellingen"; }
+@section Styles { <link rel="stylesheet" href="~/css/instellingen/index.css" asp-append-version="true" /> }
+
+@* Instellingen zijn statisch. Ze maken de back-office compleet zonder extra backendlogica. *@
+<section class="page-heading"><div><p class="eyebrow">Configuratie</p><h1>Instellingen</h1><p>Algemene instellingen voor catalogusbeheer, meldingen en rollen.</p></div></section>
+<section class="settings-grid">
+    <article class="settings-card"><i data-lucide="sliders-horizontal"></i><h2>Catalogusinstellingen</h2><p>Standaard btw, prijsweergave en productstatussen.</p><button class="btn btn-light" type="button">Openen</button></article>
+    <article class="settings-card"><i data-lucide="bell"></i><h2>Meldingen</h2><p>Waarschuwingen bij lage voorraad en nieuwe orders.</p><button class="btn btn-light" type="button">Openen</button></article>
+    <article class="settings-card"><i data-lucide="shield-check"></i><h2>Rollen en rechten</h2><p>Bepaal welke medewerker welke onderdelen mag beheren.</p><button class="btn btn-light" type="button">Openen</button></article>
+</section>

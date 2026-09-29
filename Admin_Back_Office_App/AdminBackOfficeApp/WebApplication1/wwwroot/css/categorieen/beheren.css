@@ -1,0 +1,20 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/categorieen/beheren.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/categorieen/beheren.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Categorieen/Beheren.cshtml */
+.form-card {
+    max-width: 760px;
+}
+
+.form-card p {
+    color: var(--muted);
+}

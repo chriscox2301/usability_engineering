@@ -1,0 +1,75 @@
+using WebApplication1.Data;
+
+namespace WebApplication1
+{
+    /*
+        Program.cs is het startpunt van de ASP.NET Core MVC-applicatie.
+
+        Technische leesroute voor junior developers:
+        1. WebApplication.CreateBuilder(args) maakt een builder aan die services en configuratie verzamelt.
+        2. builder.Services.AddControllersWithViews() zet MVC aan. Daardoor werken Controllers en Views.
+        3. AddScoped<T>() registreert repositories voor Dependency Injection.
+           - Scoped betekent: één instantie per HTTP-request.
+           - Controllers krijgen deze objecten via hun constructor.
+        4. builder.Build() maakt de echte webapplicatie.
+        5. Middleware zoals UseStaticFiles(), UseRouting() en UseAuthorization() bepaalt hoe requests verwerkt worden.
+        6. MapControllerRoute() bepaalt welke controller/action standaard geopend wordt.
+    */
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            // Builder bevat configuratie uit appsettings.json, environment settings en geregistreerde services.
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Registreert MVC. Zonder deze regel werken controllers zoals DashboardController niet.
+            builder.Services.AddControllersWithViews();
+
+            // DatabaseConnection leest de connection string en maakt SqlConnection-objecten.
+            builder.Services.AddScoped<DatabaseConnection>();
+
+            // Repositories vormen de datalaag. Controllers gebruiken deze klassen in plaats van direct SQL te schrijven.
+            builder.Services.AddScoped<ProductRepository>();
+            builder.Services.AddScoped<BestellingRepository>();
+            builder.Services.AddScoped<CategorieRepository>();
+            builder.Services.AddScoped<LeverancierRepository>();
+            builder.Services.AddScoped<MedewerkerRepository>();
+            builder.Services.AddScoped<KlantenserviceRepository>();
+
+            // Bouwt de applicatie op basis van alle instellingen hierboven.
+            var app = builder.Build();
+
+            // In productie wordt een nette foutpagina gebruikt in plaats van technische exceptiondetails.
+            if (!app.Environment.IsDevelopment())
+            {
+                // Bij een fout routeert ASP.NET Core naar HomeController.Error().
+                app.UseExceptionHandler("/Home/Error");
+
+                // HSTS dwingt browsers om HTTPS te gebruiken nadat de site eenmaal via HTTPS is bezocht.
+                app.UseHsts();
+            }
+
+            // Stuurt HTTP-verzoeken automatisch door naar HTTPS.
+            app.UseHttpsRedirection();
+
+            // Maakt bestanden in wwwroot beschikbaar, zoals CSS, JavaScript, Bootstrap en afbeeldingen.
+            app.UseStaticFiles();
+
+            // Activeert routeherkenning. Daarna weet ASP.NET Core welke controller/action bij een URL hoort.
+            app.UseRouting();
+
+            // Activeert autorisatie-middleware. Er is nu geen login, maar deze regel is normaal in MVC-projecten.
+            app.UseAuthorization();
+
+            // Standaardroute:
+            // /Producten/Details/5 betekent controller=Producten, action=Details, id=5.
+            // Zonder URL opent de app DashboardController.Index().
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+
+            // Start de webserver.
+            app.Run();
+        }
+    }
+}

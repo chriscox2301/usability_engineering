@@ -1,0 +1,16 @@
+@model List<Product>
+@*
+    JUNIOR-UITLEG Views/Rapportages/Index.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{ ViewData["Title"] = "Rapportages"; }
+@section Styles { <link rel="stylesheet" href="~/css/rapportages/index.css" asp-append-version="true" /> }
+
+@* Rapportages zijn sierfunctionaliteit voor een professionele back-office uitstraling. *@
+<section class="page-heading"><div><p class="eyebrow">Inzicht</p><h1>Rapportages</h1><p>Bekijk stuurinformatie over catalogus, voorraad en verkoop.</p></div></section>
+<section class="report-grid">
+    <article class="report-card"><i data-lucide="bar-chart-3"></i><h2>Populaire categorieën</h2><div class="fake-chart"><span style="height:72%"></span><span style="height:55%"></span><span style="height:40%"></span><span style="height:66%"></span></div></article>
+    <article class="report-card"><i data-lucide="trending-up"></i><h2>Voorraadwaarde</h2><strong>€ @Model.Sum(p => p.Prijs * p.Voorraad)</strong><p>Gebaseerd op actuele productgegevens.</p></article>
+    <article class="report-card"><i data-lucide="triangle-alert"></i><h2>Lage voorraad</h2><strong>@Model.Count(p => p.HeeftLageVoorraad()) producten</strong><p>Producten die aandacht nodig hebben.</p></article>
+</section>

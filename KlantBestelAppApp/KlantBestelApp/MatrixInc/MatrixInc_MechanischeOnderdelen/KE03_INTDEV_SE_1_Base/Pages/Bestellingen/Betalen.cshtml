@@ -1,0 +1,193 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Bestellingen.BetalenModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Bestellingen/Betalen.cshtml
+   Deze pagina is toegevoegd voor de checkout nadat een klant vanaf Bestelling plaatsen inlogt.
+   De klant komt na de nep-login direct op deze betaalpagina terecht. *@
+
+@{
+    ViewData["Title"] = "Betalen";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Bestellingen/betalen.css" asp-append-version="true" />
+}
+
+<div class="page-title">
+    <div>
+        <span class="badge"><i data-lucide="credit-card"></i> Betalen</span>
+        <h1>Betaalpagina</h1>
+        <p class="muted">Kies een betaalmethode en rond je bestelling af.</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.Foutmelding))
+{
+    <div class="alert alert-danger">@Model.Foutmelding</div>
+}
+
+@if (Model.Besteld)
+{
+    <section class="card success-card">
+        <i data-lucide="check-circle-2"></i>
+        <h2>Betaling gelukt</h2>
+        <p>Je bestelling met ordernummer <strong>@Model.LaatsteOrdernummer</strong> is geplaatst en opgeslagen in MatrixIncDb.</p>
+        <div class="actions">
+            <a class="button" asp-page="/Bestellingen/Geschiedenis"><i data-lucide="history"></i> Bekijk orderhistorie</a>
+            <a class="button secondary" asp-page="/Producten/Overzicht"><i data-lucide="arrow-left"></i> Verder winkelen</a>
+        </div>
+    </section>
+}
+else if (!Model.Items.Any())
+{
+    <section class="card message-card">
+        <i data-lucide="shopping-cart"></i>
+        <h2>Geen producten gevonden</h2>
+        <p class="muted">Je winkelmand is leeg. Voeg eerst producten toe voordat je gaat betalen.</p>
+        <a class="button" asp-page="/Producten/Overzicht"><i data-lucide="package-search"></i> Naar producten</a>
+    </section>
+}
+else
+{
+    <section class="payment-layout">
+        <form method="post" id="betaalForm" class="card payment-card">
+            <h2><i data-lucide="wallet-cards"></i> Betaalmethode</h2>
+            <p class="muted">Dit is een demo-betaalpagina. Er wordt geen echte betaling uitgevoerd.</p>
+
+            <div class="payment-options">
+                <label class="payment-option">
+                    <input type="radio" asp-for="Betaalmethode" value="iDEAL" checked />
+                    <span><i data-lucide="landmark"></i> iDEAL</span>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" asp-for="Betaalmethode" value="Creditcard" />
+                    <span><i data-lucide="credit-card"></i> Creditcard</span>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" asp-for="Betaalmethode" value="Achteraf betalen" />
+                    <span><i data-lucide="receipt-text"></i> Achteraf betalen</span>
+                </label>
+            </div>
+
+            <div class="form-field">
+                <label asp-for="OrderOpmerkingen">Order opmerkingen (optioneel)</label>
+                <textarea asp-for="OrderOpmerkingen" placeholder="Bijvoorbeeld: bezorg het maar bij de buren."></textarea>
+            </div>
+
+            <button type="submit"><i data-lucide="lock-keyhole"></i> Betalen en bestelling plaatsen</button>
+        </form>
+
+        <aside class="order-sidebar">
+            <section class="card address-card" tabindex="0" aria-label="Adresgegevens aanpassen">
+                <div class="address-header">
+                    <h2><i data-lucide="map-pin"></i> Adresgegevens</h2>
+                    <button type="button" class="edit-address-button" aria-label="Adres aanpassen" aria-controls="adresGegevens" aria-expanded="false">
+                        <i class="chevron" data-lucide="chevron-down"></i>
+                    </button>
+                </div>
+                <p class="muted">Bezorggegevens van een eerdere bestelling</p>
+
+                <div class="address-preview">
+                    <strong>@Model.Naam</strong>
+                    <span>@Model.Straat @Model.Huisnummer, @Model.Postcode @Model.Plaats</span>
+                    <span>@Model.Email</span>
+                </div>
+
+                <div class="address-form" id="adresGegevens" aria-hidden="true">
+                    <div class="form-field">
+                        <label asp-for="Naam">Naam</label>
+                        <input asp-for="Naam" form="betaalForm" class="address-input" readonly />
+                    </div>
+                    <div class="form-field">
+                        <label asp-for="Email">E-mailadres</label>
+                        <input asp-for="Email" form="betaalForm" class="address-input" readonly />
+                    </div>
+                    <div class="address-row">
+                        <div class="form-field">
+                            <label asp-for="Straat">Straat</label>
+                            <input asp-for="Straat" form="betaalForm" class="address-input" readonly />
+                        </div>
+                        <div class="form-field house-number-field">
+                            <label asp-for="Huisnummer">Huisnummer</label>
+                            <input asp-for="Huisnummer" form="betaalForm" class="address-input" readonly />
+                        </div>
+                    </div>
+                    <div class="address-row">
+                        <div class="form-field">
+                            <label asp-for="Postcode">Postcode</label>
+                            <input asp-for="Postcode" form="betaalForm" class="address-input" readonly />
+                        </div>
+                        <div class="form-field">
+                            <label asp-for="Plaats">Plaats</label>
+                            <input asp-for="Plaats" form="betaalForm" class="address-input" readonly />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card summary-card">
+                <h2><i data-lucide="list-checks"></i> Besteloverzicht</h2>
+                @foreach (var item in Model.Items)
+                {
+                    <div class="order-line">
+                        <span>@item.Aantal x @item.ProductNaam</span>
+                        <strong>€ @item.Subtotaal.ToString("0.00")</strong>
+                    </div>
+                }
+                <hr />
+                <div class="order-line total">
+                    <span>Totaal</span>
+                    <strong>€ @Model.Totaal.ToString("0.00")</strong>
+                </div>
+            </section>
+        </aside>
+    </section>
+}
+@section Scripts {
+    <script>
+        const addressCard = document.querySelector('.address-card');
+        const editAddressButton = document.querySelector('.edit-address-button');
+        const addressForm = document.querySelector('#adresGegevens');
+        const addressInputs = document.querySelectorAll('.address-input');
+
+        function toggleAddressDropdown() {
+            const isOpen = addressCard?.classList.toggle('is-open');
+
+            addressForm?.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            editAddressButton?.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+            addressInputs.forEach(input => {
+                if (isOpen) {
+                    input.removeAttribute('readonly');
+                    input.classList.add('is-editable');
+                } else {
+                    input.setAttribute('readonly', 'readonly');
+                    input.classList.remove('is-editable');
+                }
+            });
+
+            if (isOpen) {
+                const firstInput = document.querySelector('.address-input');
+                if (firstInput) {
+                    firstInput.focus();
+                    firstInput.select();
+                }
+            }
+        }
+
+        addressCard?.addEventListener('click', function (event) {
+            if (event.target.closest('input, label, textarea, select')) {
+                event.stopPropagation();
+                return;
+            }
+
+            toggleAddressDropdown();
+        });
+
+        addressCard?.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                toggleAddressDropdown();
+            }
+        });
+    </script>
+}

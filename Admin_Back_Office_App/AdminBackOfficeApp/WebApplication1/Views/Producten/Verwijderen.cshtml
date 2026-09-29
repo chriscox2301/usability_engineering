@@ -1,0 +1,27 @@
+@model Product
+@*
+    TECHNISCHE VIEW-UITLEG
+    Bestand: Views/Producten/Verwijderen.cshtml
+    Deze Razor View wordt aangeroepen door de controller/action met dezelfde mapnaam.
+    Tag helpers zoals asp-controller, asp-action en asp-route-id genereren veilige MVC-links.
+*@
+@*
+    JUNIOR-UITLEG Views/Producten/Verwijderen.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{ ViewData["Title"] = "Product verwijderen"; }
+@section Styles { <link rel="stylesheet" href="~/css/producten/verwijderen.css" asp-append-version="true" /> }
+
+@* Verwijderen toont eerst een bevestiging. Dit voorkomt fouten in professioneel beheer. *@
+<section class="page-heading"><div><p class="eyebrow">Bevestigen</p><h1>Product deactiveren</h1><p>Controleer of je het juiste product hebt gekozen.</p></div></section>
+<article class="confirm-card">
+    <i data-lucide="triangle-alert"></i>
+    <h2>@Model.Naam</h2>
+    <p>In een echte back-office zou dit product meestal op inactief gezet worden in plaats van definitief verwijderd.</p>
+    <form asp-action="VerwijderenBevestigd" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <button class="btn btn-danger" type="submit">Ja, deactiveren</button>
+        <a class="btn btn-light" asp-action="Index">Annuleren</a>
+    </form>
+</article>

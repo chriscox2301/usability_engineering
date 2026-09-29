@@ -1,0 +1,23 @@
+@model List<Categorie>
+@*
+    JUNIOR-UITLEG Views/Categorieen/Index.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{ ViewData["Title"] = "Categorieën beheren"; }
+@section Styles { <link rel="stylesheet" href="~/css/categorieen/index.css" asp-append-version="true" /> }
+
+@* Categorieën zorgen voor overzicht in de productcatalogus. *@
+<section class="page-heading"><div><p class="eyebrow">Structuur</p><h1>Categorieën beheren</h1><p>Deel mechanische onderdelen logisch in, zodat medewerkers sneller beheren.</p></div><button class="btn btn-primary" type="button"><i data-lucide="plus"></i> Nieuwe categorie</button></section>
+<section class="category-grid">
+@foreach (var categorie in Model)
+{
+    <article class="category-card">
+        <i data-lucide="@categorie.Icoon"></i>
+        <h2>@categorie.Naam</h2>
+        <p>@categorie.Omschrijving</p>
+        <strong>@categorie.AantalProducten producten</strong>
+        <a asp-action="Beheren" asp-route-id="@categorie.Id">Beheren</a>
+    </article>
+}
+</section>

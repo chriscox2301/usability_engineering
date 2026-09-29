@@ -1,0 +1,101 @@
+@model List<Product>
+@* Deze View ontvangt een List<Product> van ProductenController.Index(). *@
+@{
+    ViewData["Title"] = "Producten beheren";
+    var categorieen = ViewBag.Categorieen as List<string> ?? new List<string>();
+    string gekozenCategorie = ViewBag.Categorie as string ?? "Alle";
+    string gekozenStatus = ViewBag.Status as string ?? "Alle";
+    string gekozenVoorraad = ViewBag.Voorraad as string ?? "Alle";
+}
+@section Styles { <link rel="stylesheet" href="~/css/producten/index.css" asp-append-version="true" /> }
+
+
+@*
+    JUNIOR-UITLEG Producten/Index.cshtml
+    Relatie met controller: ProductenController.Index levert een List<Product>.
+    Relatie met ViewBag: ViewBag.Categorieen vult de dropdown en filterwaarden blijven zichtbaar.
+    Technisch: de select-elementen worden gevuld met bestaande waarden en de form gebruikt GET-filters.
+*@
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Catalogusbeheer</p>
+        <h1>Producten beheren</h1>
+        <p>Bekijk, controleer en muteer de productinformatie die klanten later in de webshop zien.</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Producten" asp-action="Toevoegen"><i data-lucide="plus"></i> Product toevoegen</a>
+</section>
+
+@if (TempData["Melding"] != null)
+{
+    <div class="alert alert-info">@TempData["Melding"]</div>
+}
+
+@* Filterformulier gebruikt method="get", daardoor komen filters als querystring in ProductenController.Index(). *@
+<form class="filter-bar" method="get" asp-controller="Producten" asp-action="Index">
+    <div><label>Zoeken</label><input name="zoeken" value="@ViewBag.Zoeken" placeholder="Naam, artikelnummer of merk" /></div>
+    <div>
+        <label>Categorie</label>
+        <select name="categorie">
+            <option value="Alle">Alle categorieën</option>
+            @foreach (var categorie in categorieen)
+            {
+                if (gekozenCategorie == categorie)
+                {
+                    <option value="@categorie" selected>@categorie</option>
+                }
+                else
+                {
+                    <option value="@categorie">@categorie</option>
+                }
+            }
+        </select>
+    </div>
+    <div>
+        <label>Status</label>
+        <select name="status">
+            <option value="Alle">Alle statussen</option>
+            @if (gekozenStatus == "Actief") { <option value="Actief" selected>Actief</option> } else { <option value="Actief">Actief</option> }
+            @if (gekozenStatus == "Concept") { <option value="Concept" selected>Concept</option> } else { <option value="Concept">Concept</option> }
+            @if (gekozenStatus == "Inactief") { <option value="Inactief" selected>Inactief</option> } else { <option value="Inactief">Inactief</option> }
+        </select>
+    </div>
+    <div>
+        <label>Voorraad</label>
+        <select name="voorraad">
+            <option value="Alle">Alle voorraad</option>
+            @if (gekozenVoorraad == "Lage voorraad") { <option value="Lage voorraad" selected>Lage voorraad</option> } else { <option value="Lage voorraad">Lage voorraad</option> }
+            @if (gekozenVoorraad == "Ruim op voorraad") { <option value="Ruim op voorraad" selected>Ruim op voorraad</option> } else { <option value="Ruim op voorraad">Ruim op voorraad</option> }
+        </select>
+    </div>
+    <div class="filter-actions"><button class="btn btn-primary" type="submit"><i data-lucide="filter"></i> Filteren</button></div>
+</form>
+
+<section class="table-card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Product</th><th>Artikelnummer</th><th>Categorie</th><th>Merk</th><th>Prijs</th><th>Voorraad</th><th>Status</th><th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+        @* foreach rendert één tabelrij per Product in de lijst. *@
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td><div class="product-cell"><span><i data-lucide="@product.Icoon"></i></span><div><strong>@product.Naam</strong><small>@product.Omschrijving</small></div></div></td>
+                <td>@product.Artikelnummer</td>
+                <td>@product.Categorie</td>
+                <td>@product.Merk</td>
+                <td>€ @product.Prijs</td>
+                <td><span class="badge @(product.HeeftLageVoorraad() ? "badge-warning" : "badge-soft")">@product.Voorraad</span></td>
+                <td><span class="badge badge-soft">@product.Status</span></td>
+                <td class="action-links">
+                    <a asp-controller="Producten" asp-action="Details" asp-route-id="@product.Id">Details</a>
+                    <a asp-controller="Producten" asp-action="Wijzigen" asp-route-id="@product.Id">Wijzigen</a>
+                    <a asp-controller="Producten" asp-action="Verwijderen" asp-route-id="@product.Id">Verwijderen</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</section>

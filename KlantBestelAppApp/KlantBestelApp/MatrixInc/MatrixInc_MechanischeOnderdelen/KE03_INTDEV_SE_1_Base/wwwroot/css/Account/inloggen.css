@@ -1,0 +1,38 @@
+/* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/wwwroot/css/Account/inloggen.css
+   Dit CSS-bestand hoort bij één pagina of onderdeel en regelt alleen de vormgeving.
+   Er staat geen C# logica in CSS. */
+/* OPBOUW VAN DIT CSS-BESTAND
+   - Selectors zoals .card of .hero verwijzen naar class="card" of class="hero" in de bijbehorende .cshtml pagina.
+   - CSS verandert alleen vormgeving: kleur, ruimte, grootte, grid/flex en responsive gedrag.
+   - CSS verandert geen data, winkelmand of bestelling. Die logica staat in de .cshtml.cs bestanden. */
+
+
+
+/* CSS voor Account/Inloggen.cshtml. Doel: decoratieve inlogpagina met optie gast. */
+.login-layout { display: grid; grid-template-columns: 1fr .8fr; gap: 1rem; align-items: start; margin-top: 1rem; }
+.login-card, .benefits-card { padding: 1.5rem; }
+.login-card h1 { font-size: 2.3rem; margin: .5rem 0; }
+.login-card label { display: flex; align-items: center; gap: .4rem; font-weight: 800; margin-top: 1rem; }
+.login-card label svg { color: var(--blue); width: 18px; height: 18px; }
+.login-card input { width: 100%; padding: .85rem; border: 1px solid var(--line); border-radius: 10px; margin-top: .35rem; }
+.login-card button { width: 100%; margin-top: 1rem; }
+.guest { display: flex; justify-content:center; align-items:center; gap:.35rem; text-align: center; margin-top: .8rem; color: var(--blue); font-weight: 800; }
+.forgotpassword {
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    gap: .35rem;
+    text-align: left;
+    margin-top: 5;
+    color: var(--blue);
+    font-weight: 500;
+}
+.benefits-card h2 { display:flex; align-items:center; gap:.4rem; }
+.benefits-card ul { list-style: none; padding: 0; display: grid; gap: .75rem; }
+.benefits-card li { display: flex; align-items: center; gap: .5rem; }
+.benefits-card svg { color: var(--blue); }
+@media (max-width: 850px) { .login-layout { grid-template-columns: 1fr; } }
+
+/* Twee inlogroutes: naar producten of naar winkelwagen. */
+.login-routes { display: grid; gap: .7rem; margin-top: 1rem; }
+.login-routes .button { width: 100%; }

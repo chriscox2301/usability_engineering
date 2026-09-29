@@ -1,0 +1,143 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Bestellingen.PlaatsenModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Bestellingen/Plaatsen.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+@{
+    ViewData["Title"] = "Bestelling plaatsen";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Bestellingen/plaatsen.css" asp-append-version="true" />
+}
+
+<!-- Bestelling plaatsen: de klant bevestigt de producten uit de winkelmand. -->
+<div class="page-title">
+    <div>
+        <span class="badge"><i data-lucide="clipboard-check"></i> Checkout</span>
+        <h1>Bestelling plaatsen</h1>
+        <p class="muted">Controleer je producten en bevestig je bestelling.</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.Foutmelding))
+{
+    <div class="alert alert-danger">@Model.Foutmelding</div>
+}
+
+@if (Model.Besteld)
+{
+    <section class="card success-card">
+        <i data-lucide="check-circle-2"></i>
+        <h2>Bestelling geplaatst</h2>
+        <p>Je bestelling met ordernummer <strong>@Model.LaatsteOrdernummer</strong> staat klaar in de orderhistorie en is opgeslagen in MatrixIncDb.</p>
+        <div class="actions">
+            <a class="button" asp-page="/Bestellingen/Geschiedenis"><i data-lucide="history"></i> Bekijk orderhistorie</a>
+            <a class="button secondary" asp-page="/Producten/Overzicht"><i data-lucide="arrow-left"></i> Verder winkelen</a>
+        </div>
+    </section>
+}
+else if (!Model.Items.Any())
+{
+    <section class="card message-card">
+        <i data-lucide="shopping-cart"></i>
+        <h2>Geen producten gevonden</h2>
+        <p class="muted">Je winkelmand is leeg. Voeg eerst producten toe.</p>
+        <a class="button" asp-page="/Producten/Overzicht"><i data-lucide="package-search"></i> Naar producten</a>
+    </section>
+}
+else
+{
+    <section class="checkout-layout">
+        <div class="checkout-main">
+            <section class="card login-prompt-card">
+                <div>
+                    <h2><i data-lucide="user-round"></i> Heeft u al een account?</h2>
+                    <p class="muted">Log in om direct door te gaan naar de betaalpagina.</p>
+                </div>
+                <a class="button secondary login-button" asp-page="/Account/Inloggen" asp-route-returnUrl="/Bestellingen/Betalen"><i data-lucide="log-in"></i> Inloggen</a>
+            </section>
+
+            <details class="card checkout-card guest-dropdown">
+                <summary>
+                    <h3><i data-lucide="user-round"></i> Bestellen als gast</h3>
+                    <i class="chevron" data-lucide="chevron-down"></i>
+                </summary>
+
+                <p class="muted">Je kunt doorgaan zonder account. Maak later een account aan om sneller je gegevens te gebruiken.</p>
+
+                <form method="post" class="checkout-form">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label asp-for="Naam">Naam</label>
+                            <input asp-for="Naam" placeholder="Bijv. Jan" required />
+                        </div>
+                        <div class="form-field">
+                            <label asp-for="Email">E-mailadres</label>
+                            <input asp-for="Email" type="email" placeholder="naam@example.com" required />
+                        </div>
+                        <div class="form-field full">
+                            <label asp-for="Adres">Adres</label>
+                            <input asp-for="Adres" placeholder="Straat en huisnummer" required />
+                        </div>
+                        <div class="form-field">
+                            <label asp-for="Postcode">Postcode</label>
+                            <input asp-for="Postcode" placeholder="1234 AB" required />
+                        </div>
+                        <div class="form-field">
+                            <label asp-for="Plaats">Plaats</label>
+                            <input asp-for="Plaats" placeholder="Woonplaats" required />
+                        </div>
+                        <div class="form-field full">
+                            <label asp-for="OrderOpmerkingen">Order opmerkingen (optioneel)</label>
+                            <textarea asp-for="OrderOpmerkingen" placeholder="Bijvoorbeeld: bezorg het maar bij de buren."></textarea>
+                        </div>
+                    </div>
+
+                    <h2><i data-lucide="list-checks"></i> Controleer je bestelling</h2>
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="order-line">
+                            <span>@item.Aantal x @item.ProductNaam</span>
+                            <strong>€ @item.Subtotaal.ToString("0.00")</strong>
+                        </div>
+                    }
+                    <hr />
+                    <div class="order-line total">
+                        <span>Totaal</span>
+                        <strong>€ @Model.Totaal.ToString("0.00")</strong>
+                    </div>
+
+                    <section class="guest-payment-section" aria-labelledby="gastBetaalmethodeTitel">
+                        <h2 id="gastBetaalmethodeTitel"><i data-lucide="wallet-cards"></i> Betaalmethode</h2>
+                        <p class="muted">Kies hoe je de bestelling als gast wilt betalen.</p>
+
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" asp-for="Betaalmethode" value="iDEAL" checked />
+                                <span><i data-lucide="landmark"></i> iDEAL</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" asp-for="Betaalmethode" value="Creditcard" />
+                                <span><i data-lucide="credit-card"></i> Creditcard</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" asp-for="Betaalmethode" value="Achteraf betalen" />
+                                <span><i data-lucide="receipt-text"></i> Achteraf betalen</span>
+                            </label>
+                        </div>
+                    </section>
+
+                    <button type="submit"><i data-lucide="check"></i> Bestelling bevestigen</button>
+                </form>
+            </details>
+        </div>
+
+        <aside class="card side-info">
+            <h2><i data-lucide="user-round-plus"></i> Nog geen account?</h2>
+            <p class="muted">Maak een account aan voor een snellere checkout en om je bestellingen te volgen.</p>
+            <a class="button secondary account-button" asp-page="/Account/Aanmaken"><i data-lucide="user-plus"></i> Account aanmaken</a>
+        </aside>
+    </section>
+}

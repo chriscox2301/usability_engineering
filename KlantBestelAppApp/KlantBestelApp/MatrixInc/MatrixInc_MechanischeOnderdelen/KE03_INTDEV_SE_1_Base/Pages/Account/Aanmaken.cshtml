@@ -1,0 +1,36 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Account.AanmakenModel
+
+@{
+    ViewData["Title"] = "Account aanmaken";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Account/inloggen.css" asp-append-version="true" />
+}
+
+<section class="login-layout">
+    <div class="card login-card">
+        <span class="badge"><i data-lucide="user-round-plus"></i> Account</span>
+        <h1>Account aanmaken</h1>
+        <p class="muted">Maak een account aan om sneller te bestellen en je gegevens te bewaren.</p>
+
+        <label><i data-lucide="user-round"></i> Naam</label>
+        <input placeholder="Bijv. Jan" />
+        <label><i data-lucide="mail"></i> E-mailadres</label>
+        <input type="email" placeholder="naam@example.com" />
+        <label><i data-lucide="lock-keyhole"></i> Wachtwoord</label>
+        <input type="password" placeholder="••••••••" />
+        <button type="button"><i data-lucide="user-plus"></i> Account aanmaken</button>
+        <a class="guest" asp-page="/Account/Inloggen"><i data-lucide="log-in"></i> Ik heb al een account</a>
+    </div>
+
+    <aside class="card benefits-card">
+        <h2><i data-lucide="sparkles"></i> Voordelen van een account</h2>
+        <ul>
+            <li><i data-lucide="history"></i> Sneller orderhistorie bekijken</li>
+            <li><i data-lucide="map-pin"></i> Adresgegevens bewaren</li>
+            <li><i data-lucide="bell"></i> Meldingen over levering</li>
+            <li><i data-lucide="file-text"></i> Facturen terugvinden</li>
+        </ul>
+    </aside>
+</section>

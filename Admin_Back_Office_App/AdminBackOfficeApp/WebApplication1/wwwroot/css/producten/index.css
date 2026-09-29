@@ -1,0 +1,40 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/producten/index.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/producten/index.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Producten/Index.cshtml */
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.product-cell svg {
+    width: 38px;
+    height: 38px;
+    padding: 9px;
+    border-radius: 12px;
+    background: #eef4ff;
+    color: var(--primary);
+}
+
+.table-card {
+    overflow: hidden;
+}
+
+.admin-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.alert {
+    border-radius: 16px;
+    border: 1px solid #bfdbfe;
+}

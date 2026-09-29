@@ -1,0 +1,24 @@
+@model Product
+@*
+    TECHNISCHE VIEW-UITLEG
+    Bestand: Views/Voorraad/Aanpassen.cshtml
+    Deze Razor View wordt aangeroepen door de controller/action met dezelfde mapnaam.
+    Tag helpers zoals asp-controller, asp-action en asp-route-id genereren veilige MVC-links.
+*@
+@{ ViewData["Title"] = "Voorraad aanpassen"; }
+@section Styles { <link rel="stylesheet" href="~/css/voorraad/aanpassen.css" asp-append-version="true" /> }
+
+
+@*
+    JUNIOR-UITLEG Voorraad/Aanpassen.cshtml
+    Relatie met controller: VoorraadController.Aanpassen verwerkt het voorraadformulier.
+    Relatie met repository: ProductRepository.PasVoorraadAan() schrijft de nieuwe voorraad naar SQL Server.
+*@
+@* GET toont de huidige voorraad. POST zou de voorraad opslaan. *@
+<section class="page-heading"><div><p class="eyebrow">Voorraad muteren</p><h1>@Model.Naam</h1><p>Pas de voorraad aan voor het magazijn.</p></div></section>
+<form asp-action="Aanpassen" method="post" class="form-card narrow">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <label>Nieuwe voorraad</label>
+    <input class="form-control" type="number" name="voorraad" value="@Model.Voorraad" min="0" />
+    <div class="button-row"><button class="btn btn-primary" type="submit">Voorraad opslaan</button><a class="btn btn-light" asp-action="Index">Terug</a></div>
+</form>

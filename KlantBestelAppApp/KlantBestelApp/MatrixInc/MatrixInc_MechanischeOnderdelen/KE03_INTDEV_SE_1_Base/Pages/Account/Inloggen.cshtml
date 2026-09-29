@@ -1,0 +1,62 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Account.InloggenModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Account/Inloggen.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+
+@* EXTRA BEGINNER-UITLEG
+   - @page betekent: dit bestand is een Razor Page die direct via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen <section>, <div>, <article> en <form> is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+@{
+    ViewData["Title"] = "Inloggen";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Account/inloggen.css" asp-append-version="true" />
+}
+@* PAGINA-UITLEG VOOR JUNIOR
+   Doel: realistische inlogpagina voor de uitstraling van de webshop.
+   Belangrijk: login werkt bewust niet.
+   De ene inlogknop stuurt de klant door naar de juiste vervolgpagina. *@
+
+
+<!-- Inlogpagina voor een realistische webshopervaring. De velden zijn alleen visueel. -->
+<section class="login-layout">
+    <div class="card login-card">
+        <span class="badge"><i data-lucide="user-round"></i> Account</span>
+        <h1>Inloggen</h1>
+        <p class="muted">Log in om sneller te bestellen en je gegevens te bewaren, of ga direct verder als gast.</p>
+
+        @* Deze inputvelden zijn alleen visueel.
+           Er is geen OnPost-loginmethode, omdat inloggen niet bij de verplichte use cases hoort. *@
+        <label><i data-lucide="mail"></i> E-mailadres</label>
+        <input placeholder="naam@example.com" />
+        <label><i data-lucide="lock-keyhole"></i> Wachtwoord</label>
+        <input type="password" placeholder="••••••••" />
+        <div class="login-routes">
+            @* Na klikken op inloggen gaat de klant terug naar de juiste pagina.
+               Vanuit Bestelling plaatsen is dat direct de betaal-/checkoutpagina. *@
+            <a class="forgotpassword" asp-page=""><i data-lucide=""></i> Wachtwoord vergeten?</a>
+            <a class="button" href="@Model.ReturnUrl"><i data-lucide="log-in"></i> Inloggen</a>
+        </div>
+
+        <a class="guest" asp-page="/Account/Aanmaken"><i data-lucide="user-round-plus"></i> Nog geen account?</a>
+    </div>
+
+    <aside class="card benefits-card">
+        <h2><i data-lucide="sparkles"></i> Voordelen van een account</h2>
+        <ul>
+            <li><i data-lucide="history"></i> Sneller orderhistorie bekijken</li>
+            <li><i data-lucide="map-pin"></i> Adresgegevens bewaren</li>
+            <li><i data-lucide="bell"></i> Meldingen over levering</li>
+            <li><i data-lucide="file-text"></i> Facturen terugvinden</li>
+        </ul>
+    </aside>
+</section>

@@ -1,0 +1,21 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/producten/wijzigen.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/producten/wijzigen.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Producten/Wijzigen.cshtml */
+.form-card {
+    max-width: 980px;
+}
+
+.form-card .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 .2rem rgba(0, 87, 194, .12);
+}

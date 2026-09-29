@@ -1,0 +1,55 @@
+/* Styling voor Views/Klantenservice/Index.cshtml */
+.service-summary {
+    display: flex;
+    align-items: center;
+}
+
+/*
+    Logische kleuren:
+    - Status gaat over de fase van de klacht.
+    - Prioriteit gaat over urgentie.
+    Zo worden status en prioriteit niet meer met dezelfde betekenis/kleur verward.
+*/
+.badge-status-open {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-status-progress {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-status-done {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-priority-high {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.badge-priority-normal {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.badge-priority-low {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* Samenvattingsbadge: aantal openstaande klachten blijft rood/oranje omdat dit aandacht vraagt. */
+.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.open-row {
+    background: #fff7f7;
+}
+
+.admin-table td:nth-child(4) {
+    max-width: 420px;
+}

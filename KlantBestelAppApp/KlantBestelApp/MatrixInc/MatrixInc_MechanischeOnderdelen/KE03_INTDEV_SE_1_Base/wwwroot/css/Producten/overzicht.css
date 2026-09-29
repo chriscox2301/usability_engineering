@@ -1,0 +1,92 @@
+/* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/wwwroot/css/Producten/overzicht.css
+   Dit CSS-bestand hoort bij één pagina of onderdeel en regelt alleen de vormgeving.
+   Er staat geen C# logica in CSS. */
+/* OPBOUW VAN DIT CSS-BESTAND
+   - Selectors zoals .card of .hero verwijzen naar class="card" of class="hero" in de bijbehorende .cshtml pagina.
+   - CSS verandert alleen vormgeving: kleur, ruimte, grootte, grid/flex en responsive gedrag.
+   - CSS verandert geen data, winkelmand of bestelling. Die logica staat in de .cshtml.cs bestanden. */
+
+
+
+/* CSS voor Producten/Overzicht.cshtml. Doel: productkaarten en filterkolom vormgeven. */
+.product-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; }
+.filters { padding: 1rem; align-self: start; position: sticky; top: 135px; }
+.filter-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
+.filter-header h2 { margin: 0; }
+.filter-group { border-top: 1px solid var(--line); padding-top: .9rem; margin-top: .9rem; display: grid; gap: .55rem; }
+.filter-group h3 { font-size: 1rem; margin: 0 0 .2rem; display: flex; align-items: center; gap: .35rem; }
+.filter-group a, .filter-group label { display: flex; align-items: center; gap: .45rem; color: var(--text); }
+.filter-group a { padding: .35rem .4rem; border-radius: 8px; }
+.filter-group a:hover { background: #eef4ff; color: var(--blue-dark); }
+.products-area { display: grid; gap: 1rem; }
+.sort-row { padding: .9rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+.sort-row span { display: inline-flex; align-items: center; gap: .4rem; }
+.product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.product-card { padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
+.product-link { display: grid; gap: .6rem; }
+.product-icon {
+    /* Productafbeelding is nu een Lucide SVG-icoon in plaats van emoji of foto. */
+    height: 100px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: #f8fafc;
+    color: var(--blue-dark);
+}
+.product-icon svg { width: 54px; height: 54px; stroke-width: 1.8; }
+.product-card h2 { margin: .1rem 0; font-size: 1.1rem; }
+.product-card p { margin: 0; }
+.product-points { list-style: none; padding: 0; margin: 0; display: grid; gap: .4rem; color: var(--muted); font-size: .92rem; }
+.product-points li { display: flex; align-items: center; gap: .4rem; }
+.product-points svg { width: 17px; height: 17px; color: var(--success); }
+.product-bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: .75rem; }
+@media (max-width: 1000px) { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 800px) { .product-layout { grid-template-columns: 1fr; } .filters { position: static; } .product-grid { grid-template-columns: 1fr; } .sort-row { align-items:flex-start; flex-direction:column; gap:.4rem; } }
+
+
+/* Direct toevoegen aan winkelmand op de productenpagina.
+   Relatie met UC02: de klant hoeft niet eerst naar de detailpagina.
+   Relatie met HTML: deze styling hoort bij form.quick-add-form in Producten/Overzicht.cshtml.
+   Er zit geen C#-logica in CSS; CSS maakt het formulier alleen duidelijk en modern. */
+.quick-add-form {
+    border-top: 1px solid var(--line);
+    padding-top: .85rem;
+    display: grid;
+    gap: .45rem;
+}
+
+/* Label boven het aantalveld, zodat de klant snapt wat hij invult. */
+.quantity-label {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+/* Aantalveld en knop staan naast elkaar, zoals bij moderne webshops. */
+.quick-add-row {
+    display: grid;
+    grid-template-columns: 86px 1fr;
+    gap: .5rem;
+    align-items: center;
+}
+
+/* Het aantalveld heeft bewust geen maximum.
+   Daardoor kan de klant in één keer veel producten bestellen. */
+.quantity-input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: .7rem .75rem;
+    font: inherit;
+}
+
+.quantity-input:focus {
+    outline: 2px solid #bfdbfe;
+    border-color: var(--blue);
+}
+
+@media (max-width: 520px) {
+    .quick-add-row {
+        grid-template-columns: 1fr;
+    }
+}

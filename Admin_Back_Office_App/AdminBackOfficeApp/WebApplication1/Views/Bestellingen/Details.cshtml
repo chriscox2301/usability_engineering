@@ -1,0 +1,295 @@
+@model Bestelling
+@{
+    ViewData["Title"] = "Bestelling details";
+    var bezorgers = ViewBag.Bezorgers as List<Medewerker> ?? new List<Medewerker>();
+    var beschikbareStatussen = new[]
+    {
+        "Nieuw",
+        "In behandeling",
+        "Ingepakt",
+        "Onderweg",
+        "Bezorgd",
+        "Annulering aangevraagd",
+        "Geannuleerd",
+        "Klacht gemeld"
+    };
+
+    var kanVerderNaInpakken = Model.AllesIngepakt;
+    var bezorgerGekozen = Model.BezorgerId.HasValue;
+    var klantActie = Model.Status == "Annulering aangevraagd" || Model.Status == "Klacht gemeld";
+    var volgendeActie = !Model.AllesIngepakt
+        ? "Vink eerst alle producten aan bij Stap 1."
+        : !bezorgerGekozen
+            ? "Kies daarna een bezorger bij Stap 3."
+            : "Alles is klaar om de pakketstatus verder te verwerken.";
+}
+@section Styles { <link rel="stylesheet" href="~/css/bestellingen/details.css" asp-append-version="true" /> }
+
+<section class="page-heading order-heading">
+    <div>
+        <p class="eyebrow">Orderdetails</p>
+        <h1>@Model.Ordernummer</h1>
+        <p>@Model.KlantNaam · @Model.Datum</p>
+    </div>
+    <a class="btn btn-light" asp-action="Index"><i data-lucide="arrow-left"></i> Terug naar bestellingen</a>
+</section>
+
+@if (TempData["Melding"] != null)
+{
+    <div class="alert-message alert-success-message"><i data-lucide="check-circle"></i> @TempData["Melding"]</div>
+}
+
+<section class="order-overview-card">
+    <div class="overview-main">
+        <div class="overview-icon"><i data-lucide="clipboard-list"></i></div>
+        <div>
+            <p class="eyebrow">Wat moet ik nu doen?</p>
+            <h2>@volgendeActie</h2>
+            <p>Werk de order van boven naar beneden af: controleer de klantactie, pak de producten, wijzig de status en koppel een bezorger.</p>
+        </div>
+    </div>
+
+    <div class="overview-stats">
+        <div class="overview-stat">
+            <span>Status</span>
+            <strong>@Model.Status</strong>
+        </div>
+        <div class="overview-stat">
+            <span>Ingepakt</span>
+            <strong>@Model.AantalIngepakteRegels / @Model.AantalRegels</strong>
+        </div>
+        <div class="overview-stat">
+            <span>Bezorger</span>
+            <strong>@(string.IsNullOrWhiteSpace(Model.BezorgerNaam) ? "Nog niet gekozen" : Model.BezorgerNaam)</strong>
+        </div>
+        <div class="overview-stat">
+            <span>Totaal</span>
+            <strong>€ @Model.Totaal.ToString("0.00")</strong>
+        </div>
+    </div>
+</section>
+
+<section class="delivery-card">
+    <div class="section-header">
+        <div>
+            <p class="step-label">Pakketbezorging</p>
+            <h2>@Model.PakketStatus</h2>
+            <p>@Model.BezorgProgressTekst</p>
+        </div>
+        <span class="status-pill">@Model.Status</span>
+    </div>
+
+    <div class="delivery-progress" aria-label="Voortgang pakketbezorging">
+        <div class="delivery-progress-bar" style="width:@Model.BezorgProgressPercentage%"></div>
+    </div>
+
+    <div class="delivery-steps">
+        <span>Ontvangen</span>
+        <span>Verwerkt</span>
+        <span>Ingepakt</span>
+        <span>Onderweg</span>
+        <span>Bezorgd</span>
+    </div>
+</section>
+<section class="pack-card-section">
+    <article class="detail-card workflow-card pack-card">
+        <div class="section-header">
+            <div>
+                <p class="step-label">Stap 1</p>
+                <h2>Producten inpakken</h2>
+                <p>Vink elk product aan zodra het fysiek gepakt is. Pas daarna mag de order naar Ingepakt of verder.</p>
+            </div>
+            <span class="status-pill @(Model.AllesIngepakt ? "success-pill" : "warning-pill")">@Model.AantalIngepakteRegels / @Model.AantalRegels klaar</span>
+        </div>
+
+        @if (!Model.Regels.Any())
+        {
+            <p class="muted">Er zijn geen bestelregels gevonden voor deze order.</p>
+        }
+        else
+        {
+            <form method="post" asp-action="RegelsInpakken" asp-route-id="@Model.Id" class="picker-list-form">
+                <div class="order-lines" id="orderPickerList">
+                    @foreach (var regel in Model.Regels)
+                    {
+                        <article class="order-line @(regel.IsIngepakt ? "order-line-packed" : "")">
+                            <label class="picker-check" title="Vink aan wanneer dit product gepakt is">
+                                <input class="pack-checkbox" type="checkbox" name="ingepakteRegelIds" value="@regel.Id" @(regel.IsIngepakt ? "checked" : "") />
+                                <span class="check-visual"><i data-lucide="check"></i></span>
+                            </label>
+
+                            <div class="product-icon"><i data-lucide="@regel.Icoon"></i></div>
+                            <div class="product-main">
+                                <h3>@regel.Aantal x @regel.ProductNaam</h3>
+                                <p>@regel.Omschrijving</p>
+                                <div class="product-meta">
+                                    <span>Artikelnummer <strong>@regel.Artikelnummer</strong></span>
+                                    <span>Merk <strong>@regel.Merk</strong></span>
+                                    <span>Categorie <strong>@regel.Categorie</strong></span>
+                                    <span>Voorraad <strong>@regel.Voorraad</strong></span>
+                                </div>
+                            </div>
+                            <div class="line-price">
+                                <strong>€ @regel.RegelTotaal.ToString("0.00")</strong>
+                                <small>€ @regel.Prijs.ToString("0.00") per stuk</small>
+                            </div>
+                        </article>
+                    }
+                </div>
+
+                <div class="confirm-pack-actions">
+                    <button id="confirmPackButton" class="btn btn-primary" type="submit" disabled><i data-lucide="save"></i> Inpaklijst bevestigen</button>
+                    <small class="muted">De vinkjes worden pas opgeslagen nadat je op bevestigen klikt.</small>
+                </div>
+            </form>
+        }
+    </article>
+</section>
+
+<section class="detail-layout actions-layout">
+    <article class="detail-card workflow-card">
+            <div class="section-header compact">
+                <div>
+                    <p class="step-label">Stap 2</p>
+                    <h2>Status aanpassen</h2>
+                </div>
+                <i data-lucide="refresh-cw"></i>
+            </div>
+            <form method="post" asp-action="StatusWijzigen" asp-route-id="@Model.Id" class="admin-form">
+                <label for="status">Nieuwe status</label>
+                <select id="status" name="status">
+                    @foreach (var status in beschikbareStatussen)
+                    {
+                        if (Model.Status == status)
+                        {
+                            <option value="@status" selected>@status</option>
+                        }
+                        else
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    }
+                </select>
+                <button id="statusSubmitButton" class="btn btn-primary" type="submit"><i data-lucide="save"></i> Status opslaan</button>
+                @if (!Model.AllesIngepakt)
+                {
+                    <small class="muted">Ingepakt, Onderweg en Bezorgd blijven geblokkeerd tot alle producten zijn aangevinkt.</small>
+                }
+            </form>
+    </article>
+
+    <article class="detail-card workflow-card">
+            <div class="section-header compact">
+                <div>
+                    <p class="step-label">Stap 3</p>
+                    <h2>Bezorger koppelen</h2>
+                </div>
+                <i data-lucide="truck"></i>
+            </div>
+            <form method="post" asp-action="BezorgerKoppelen" asp-route-id="@Model.Id" class="admin-form">
+                <label for="bezorgerId">Bezorger</label>
+                <select id="bezorgerId" name="bezorgerId">
+                    <option value="">Geen bezorger gekozen</option>
+                    @foreach (var bezorger in bezorgers)
+                    {
+                        if (Model.BezorgerId == bezorger.Id)
+                        {
+                            <option value="@bezorger.Id" selected>@bezorger.Naam (@bezorger.Rol)</option>
+                        }
+                        else
+                        {
+                            <option value="@bezorger.Id">@bezorger.Naam (@bezorger.Rol)</option>
+                        }
+                    }
+                </select>
+                <button class="btn btn-primary" type="submit"><i data-lucide="user-check"></i> Bezorger opslaan</button>
+                <small class="muted">Hierdoor komt de order in de lijst van deze bezorger.</small>
+            </form>
+    </article>
+</section>
+
+<section class="detail-layout top-info-layout">
+    <article class="detail-card">
+        <div class="section-header compact">
+            <div>
+                <p class="step-label">Klant</p>
+                <h2>Klantgegevens</h2>
+            </div>
+            <i data-lucide="user-round"></i>
+        </div>
+        <dl class="detail-list">
+            <div><dt>Naam</dt><dd>@Model.KlantNaam</dd></div>
+            <div><dt>E-mail</dt><dd>@Model.Email</dd></div>
+            <div><dt>Adres</dt><dd>@(string.IsNullOrWhiteSpace(Model.VerzendAdres) ? "Niet ingevuld" : Model.VerzendAdres)</dd></div>
+            <div><dt>Prioriteit</dt><dd>@Model.Prioriteit</dd></div>
+        </dl>
+    </article>
+
+    <article class="detail-card @(klantActie ? "attention-card" : "")">
+        <div class="section-header compact">
+            <div>
+                <p class="step-label">Klantactie</p>
+                <h2>Opmerking / annulering / klacht</h2>
+            </div>
+            <i data-lucide="message-square-warning"></i>
+        </div>
+        @if (Model.Status == "Annulering aangevraagd")
+        {
+            <p class="warning-text">De klant heeft annulering aangevraagd. Controleer dit voordat je verder verwerkt.</p>
+        }
+        else if (Model.Status == "Klacht gemeld")
+        {
+            <p class="warning-text">De klant heeft een klacht gemeld. Klantenservice moet dit opvolgen.</p>
+        }
+        else if (string.IsNullOrWhiteSpace(Model.OrderOpmerking))
+        {
+            <p class="muted">Geen orderopmerking of klantactie.</p>
+        }
+        else
+        {
+            <p class="note-text">@Model.OrderOpmerking</p>
+        }
+    </article>
+</section>
+
+
+
+@section Scripts {
+    <script>
+        (function () {
+            const statusSelect = document.getElementById('status');
+            const statusButton = document.getElementById('statusSubmitButton');
+            const checkboxes = Array.from(document.querySelectorAll('.pack-checkbox'));
+            const blockedStatuses = ['Ingepakt', 'Onderweg', 'Bezorgd'];
+
+            const confirmPackButton = document.getElementById('confirmPackButton');
+
+            function updateStatusButton() {
+                if (!statusSelect || !statusButton) return;
+                const allChecked = checkboxes.length > 0 && checkboxes.every(x => x.checked);
+                const wantsBlockedStatus = blockedStatuses.includes(statusSelect.value);
+                statusButton.disabled = wantsBlockedStatus && !allChecked;
+            }
+
+            function updatePackButton() {
+                if (!confirmPackButton) return;
+                const atLeastOneChecked = checkboxes.some(x => x.checked);
+                confirmPackButton.disabled = !atLeastOneChecked;
+            }
+
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    updatePackButton();
+                    updateStatusButton();
+                });
+            });
+
+            if (statusSelect) {
+                statusSelect.addEventListener('change', updateStatusButton);
+            }
+
+            updatePackButton();
+            updateStatusButton();
+        })();
+    </script>
+}

@@ -1,0 +1,14 @@
+@*
+    TECHNISCHE VIEW-UITLEG
+    Bestand: Views/_ViewImports.cshtml
+    Deze Razor View wordt aangeroepen door de controller/action met dezelfde mapnaam.
+    Tag helpers zoals asp-controller, asp-action en asp-route-id genereren veilige MVC-links.
+*@
+@*
+    JUNIOR-UITLEG Views/_ViewImports.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@using WebApplication1
+@using WebApplication1.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

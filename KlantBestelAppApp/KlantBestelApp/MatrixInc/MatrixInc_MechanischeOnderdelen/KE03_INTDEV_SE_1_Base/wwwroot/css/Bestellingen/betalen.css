@@ -1,0 +1,46 @@
+/* CSS voor Bestellingen/Betalen.cshtml. Doel: betaalpagina na inloggen overzichtelijk maken. */
+.page-title h1 { margin: .5rem 0; font-size: 2.3rem; }
+.payment-layout { display: grid; grid-template-columns: 1fr 360px; gap: 1rem; align-items: start; }
+.order-sidebar { display: grid; gap: 1rem; }
+.payment-card, .summary-card, .address-card, .message-card, .success-card { padding: 1.25rem; }
+.address-card { cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease; }
+.address-card:hover { border-color: var(--blue); box-shadow: 0 8px 20px rgba(15, 23, 42, .08); }
+.address-card:focus-visible { outline: 3px solid #bfdbfe; outline-offset: 3px; }
+.address-card input, .address-card label { cursor: text; }
+.payment-card h2, .summary-card h2, .address-card h2 { display: flex; align-items: center; gap: .45rem; margin-top: 0; }
+.payment-options { display: grid; gap: .75rem; margin: 1rem 0; }
+.payment-option { border: 1px solid var(--line); border-radius: 12px; padding: .9rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; background: white; }
+.payment-option:hover { border-color: var(--blue); }
+.payment-option input { width: 18px; height: 18px; }
+.payment-option span { display: inline-flex; align-items: center; gap: .5rem; font-weight: 800; color: var(--blue-dark); }
+.form-field { display: grid; gap: .35rem; margin: 1rem 0; }
+.form-field label { font-weight: 800; color: var(--blue-dark); }
+.form-field textarea { border: 1px solid var(--line); border-radius: 10px; padding: .85rem; background: white; min-height: 92px; resize: vertical; font: inherit; }
+.form-field textarea:focus { outline: 2px solid #bfdbfe; border-color: var(--blue); }
+
+.address-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.address-header h2 { margin-bottom: .25rem; }
+.edit-address-button { display:inline-flex; align-items:center; justify-content:center; background:transparent; border:none; padding:0; color:var(--blue-dark); text-decoration:none; cursor:pointer; }
+.edit-address-button:hover { color: var(--blue); }
+.edit-address-button svg { width:22px; height:22px; transition: transform .2s ease; }
+.address-card.is-open .edit-address-button svg { transform: rotate(180deg); }
+.address-preview { margin-top: .85rem; border: 1px solid var(--line); border-radius: 12px; background: #f8fafc; padding: .85rem; display: grid; gap: .25rem; color: var(--blue-dark); }
+.address-preview span { color: var(--muted); }
+.address-form { display: none; margin-top: .75rem; padding-top: .25rem; }
+.address-card.is-open .address-form { display: block; }
+.address-form .form-field { margin: .7rem 0; }
+.address-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.house-number-field { max-width: 150px; }
+.address-input { border: 1px solid var(--line); border-radius: 10px; padding: .75rem; background: #f8fafc; font: inherit; width: 100%; color: var(--blue-dark); }
+.address-input.is-editable { background: white; }
+.address-input:focus { outline: 2px solid #bfdbfe; border-color: var(--blue); }
+
+.payment-card button { width: 100%; }
+.order-line { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 0; border-bottom: 1px solid var(--line); }
+.order-line.total { border-bottom: 0; font-size: 1.25rem; }
+.summary-card .button { width: 100%; margin-top: 1rem; }
+.success-card { text-align: center; display: grid; place-items: center; gap: .8rem; }
+.success-card svg { color: var(--success); width: 64px; height: 64px; }
+.actions { display: flex; gap: .8rem; flex-wrap: wrap; justify-content: center; }
+.message-card svg { color: var(--blue); width: 44px; height: 44px; }
+@media (max-width: 850px) { .payment-layout { grid-template-columns: 1fr; } }

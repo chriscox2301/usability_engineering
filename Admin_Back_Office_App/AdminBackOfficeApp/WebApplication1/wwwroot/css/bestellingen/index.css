@@ -1,0 +1,49 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/bestellingen/index.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/bestellingen/index.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Bestellingen/Index.cshtml */
+.table-card {
+    overflow: hidden;
+}
+
+.admin-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.customer-search {
+    grid-template-columns: 2fr 1fr 1fr auto;
+}
+
+@media (max-width: 980px) {
+    .customer-search {
+        grid-template-columns: 1fr;
+    }
+}
+
+.alert-message {
+    margin: 1rem 0;
+    border: 1px solid #bfdbfe;
+    border-radius: 16px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: .9rem 1rem;
+    font-weight: 800;
+}
+
+.admin-table td small {
+    display: block;
+    margin-top: .2rem;
+}

@@ -1,0 +1,64 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/medewerkers/index.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/medewerkers/index.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Medewerkers/Index.cshtml */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.team-card {
+    padding: 22px;
+    text-align: center;
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #eef4ff;
+    color: var(--primary);
+}
+
+.avatar svg {
+    width: 32px;
+    height: 32px;
+}
+
+.team-card h2 {
+    margin: 8px 0 0;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.team-card p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.team-card small {
+    margin-top: 8px;
+}
+
+@media (max-width: 980px) {
+    .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+    .team-grid { grid-template-columns: 1fr; }
+}

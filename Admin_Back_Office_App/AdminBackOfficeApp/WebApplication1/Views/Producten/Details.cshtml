@@ -1,0 +1,29 @@
+@model Product
+@*
+    TECHNISCHE VIEW-UITLEG
+    Bestand: Views/Producten/Details.cshtml
+    Deze Razor View wordt aangeroepen door de controller/action met dezelfde mapnaam.
+    Tag helpers zoals asp-controller, asp-action en asp-route-id genereren veilige MVC-links.
+*@
+@*
+    JUNIOR-UITLEG Views/Producten/Details.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{
+    ViewData["Title"] = "Productdetails";
+}
+@section Styles { <link rel="stylesheet" href="~/css/producten/details.css" asp-append-version="true" /> }
+
+@* Details toont alle gegevens van één Product. *@
+<section class="page-heading"><div><p class="eyebrow">Productdetails</p><h1>@Model.Naam</h1><p>@Model.Omschrijving</p></div><a class="btn btn-light" asp-action="Index">Terug</a></section>
+<section class="detail-layout">
+    <article class="detail-card product-hero"><i data-lucide="@Model.Icoon"></i><h2>@Model.Naam</h2><p>@Model.Artikelnummer</p></article>
+    <article class="detail-card">
+        <h2>Productinformatie</h2>
+        <dl class="definition-list">
+            <dt>Merk</dt><dd>@Model.Merk</dd><dt>Categorie</dt><dd>@Model.Categorie</dd><dt>Prijs</dt><dd>€ @Model.Prijs</dd><dt>Voorraad</dt><dd>@Model.Voorraad stuks</dd><dt>Status</dt><dd>@Model.Status</dd><dt>Leverancier</dt><dd>@Model.Leverancier</dd><dt>Laatst gewijzigd</dt><dd>@Model.LaatstGewijzigd</dd>
+        </dl>
+        <div class="button-row"><a class="btn btn-primary" asp-action="Wijzigen" asp-route-id="@Model.Id">Wijzigen</a><a class="btn btn-outline-danger" asp-action="Verwijderen" asp-route-id="@Model.Id">Verwijderen</a></div>
+    </article>
+</section>

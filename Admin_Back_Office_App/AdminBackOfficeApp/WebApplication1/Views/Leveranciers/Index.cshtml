@@ -1,0 +1,17 @@
+@model List<Leverancier>
+@*
+    JUNIOR-UITLEG Views/Leveranciers/Index.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{ ViewData["Title"] = "Leveranciers"; }
+@section Styles { <link rel="stylesheet" href="~/css/leveranciers/index.css" asp-append-version="true" /> }
+
+@* Leveranciersbeheer maakt de back-office realistischer voor productbeheer en voorraad. *@
+<section class="page-heading"><div><p class="eyebrow">Inkoop</p><h1>Leveranciers</h1><p>Beheer contactgegevens en leveranciersstatussen.</p></div><button class="btn btn-primary" type="button"><i data-lucide="plus"></i> Leverancier toevoegen</button></section>
+<section class="supplier-grid">
+@foreach (var leverancier in Model)
+{
+    <article class="supplier-card"><i data-lucide="truck"></i><h2>@leverancier.Naam</h2><p>@leverancier.Contactpersoon</p><p>@leverancier.Email</p><p>@leverancier.Telefoon</p><span class="badge badge-soft">@leverancier.Status</span></article>
+}
+</section>

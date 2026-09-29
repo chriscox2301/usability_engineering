@@ -1,0 +1,90 @@
+@model Product
+@* Deze View gebruikt Product.cs als formuliermodel. asp-for koppelt inputvelden aan properties van Product. *@
+@{
+    ViewData["Title"] = "Product wijzigen";
+    @* ViewBag-lijsten komen uit ProductenController.VulProductFormulierKeuzes(). *@
+    var categorieen = ViewBag.Categorieen as List<string> ?? new List<string>();
+    var leveranciers = ViewBag.Leveranciers as List<string> ?? new List<string>();
+    var statussen = ViewBag.Statussen as List<string> ?? new List<string>();
+    var iconen = ViewBag.Iconen as List<string> ?? new List<string>();
+}
+@section Styles { <link rel="stylesheet" href="~/css/producten/wijzigen.css" asp-append-version="true" /> }
+
+
+@*
+    JUNIOR-UITLEG Producten/Wijzigen.cshtml
+    Relatie met controller: ProductenController.Wijzigen haalt het product op en slaat wijzigingen op.
+    Relatie met database: ProductRepository.WijzigProduct() roept de SQL stored procedure aan.
+    Technisch: dropdowns gebruiken ViewBag-lijsten uit ProductenController.VulProductFormulierKeuzes().
+*@
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Product muteren</p>
+        <h1>@Model.Naam wijzigen</h1>
+        <p>Pas productgegevens aan. Status, categorie, leverancier en icoon zijn keuzelijsten om invoerfouten te voorkomen.</p>
+    </div>
+</section>
+
+@* asp-action bepaalt naar welke POST-action het formulier verstuurd wordt. *@
+<form asp-action="Wijzigen" method="post" class="form-card">
+    <input type="hidden" asp-for="Id" />
+    @* asp-validation-summary toont ModelState errors die de controller toevoegt. *@
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-grid">
+        <div><label asp-for="Naam"></label><input asp-for="Naam" class="form-control" /></div>
+        <div><label asp-for="Artikelnummer"></label><input asp-for="Artikelnummer" class="form-control" /></div>
+        <div><label asp-for="Merk"></label><input asp-for="Merk" class="form-control" /></div>
+
+        <div>
+            <label asp-for="Categorie"></label>
+            @* select asp-for="Categorie" bindt de gekozen option aan Product.Categorie. *@
+            <select asp-for="Categorie" class="form-select">
+                @foreach (var categorie in categorieen)
+                {
+                    <option value="@categorie">@categorie</option>
+                }
+            </select>
+        </div>
+
+        <div><label asp-for="Prijs"></label><input asp-for="Prijs" class="form-control" /></div>
+        <div><label asp-for="Voorraad"></label><input asp-for="Voorraad" class="form-control" /></div>
+
+        <div>
+            <label asp-for="Status"></label>
+            @* select asp-for="Status" bindt de gekozen option aan Product.Status. *@
+            <select asp-for="Status" class="form-select">
+                @foreach (var status in statussen)
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="Leverancier"></label>
+            @* select asp-for="Leverancier" bindt de gekozen option aan Product.Leverancier. *@
+            <select asp-for="Leverancier" class="form-select">
+                @foreach (var leverancier in leveranciers)
+                {
+                    <option value="@leverancier">@leverancier</option>
+                }
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="Icoon"></label>
+            @* select asp-for="Icoon" bindt de gekozen option aan Product.Icoon. *@
+            <select asp-for="Icoon" class="form-select">
+                @foreach (var icoon in iconen)
+                {
+                    <option value="@icoon">@icoon</option>
+                }
+            </select>
+        </div>
+
+        <div class="full"><label asp-for="Omschrijving"></label><textarea asp-for="Omschrijving" class="form-control" rows="4"></textarea></div>
+    </div>
+
+    <div class="button-row"><button class="btn btn-primary" type="submit">Wijzigingen opslaan</button><a class="btn btn-light" asp-action="Index">Annuleren</a></div>
+</form>

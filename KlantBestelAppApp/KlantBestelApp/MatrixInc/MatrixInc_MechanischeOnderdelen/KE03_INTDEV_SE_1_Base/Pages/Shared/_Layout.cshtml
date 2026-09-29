@@ -1,0 +1,242 @@
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Shared/_Layout.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+@* EXTRA BEGINNER-UITLEG
+   - @page betekent: dit bestand is een Razor Page die direct via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen <section>, <div>, <article> en <form> is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    @* BEGINNER-UITLEG HEAD
+       In de <head> staat informatie die de browser nodig heeft, maar die de bezoeker meestal niet direct ziet.
+       Hier koppelen we ook het algemene CSS-bestand en eventueel pagina-specifieke CSS-bestanden. *@
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @* ViewData["Title"] wordt op elke pagina ingesteld.
+       Daardoor krijgt elke pagina een eigen titel in het browsertabblad. *@
+    <title>@ViewData["Title"] - Matrix inc.</title>
+    @* site.css is het algemene CSS-bestand voor de hele website.
+       asp-append-version zorgt dat de browser nieuwe CSS laadt als het bestand wijzigt. *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @* RenderSection("Styles") laat een pagina haar eigen CSS-bestand toevoegen.
+       Bijvoorbeeld Producten/Overzicht.cshtml gebruikt css/Producten/overzicht.css. *@
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    @{
+        // Winkelmandbadge: hiermee ziet de klant altijd dat er iets in de winkelwagen zit.
+        var winkelmandItems = Context.Session.HaalObject<List<WinkelmandItem>>("Winkelmand") ?? new List<WinkelmandItem>();
+        var winkelmandAantal = winkelmandItems.Sum(item => item.Aantal);
+        var winkelmandTotaal = winkelmandItems.Sum(item => item.Prijs * item.Aantal);
+        var toegevoegdProductNaam = TempData["WinkelmandProductNaam"] as string;
+        var toegevoegdProductAantal = TempData["WinkelmandProductAantal"] as int?;
+        var toegevoegdProductIcoon = TempData["WinkelmandProductIcoon"] as string;
+    }
+    @* BEGINNER-UITLEG BODY
+       Alles in de <body> is zichtbaar voor de gebruiker: header, pagina-inhoud en footer. *@
+    <!-- Gedeelde header. Deze header staat op elke pagina, zodat navigatie consistent blijft. -->
+    <header class="site-header">
+        <div class="topbar">
+            <a class="logo" asp-page="/Index" aria-label="Ga naar startpagina">
+                <span class="logo-mark"><i data-lucide="wrench"></i></span>
+                <span>
+                    <strong>Matrix inc.</strong>
+                    <small>Mechanische onderdelen</small>
+                </span>
+            </a>
+
+            <!-- Zoekbalk voor herkenbare webshopervaring. De zoekfunctie werkt simpel via de productenpagina. -->
+            <form class="searchbar" method="get" asp-page="/Producten/Overzicht">
+                <i data-lucide="search"></i>
+                <input name="zoekterm" placeholder="Zoek naar bouten, lagers, tandwielen of merken..." />
+                <button type="submit"><i data-lucide="arrow-right"></i> Zoeken</button>
+            </form>
+
+            <nav class="header-actions" aria-label="Account en winkelmand">
+                <!-- Inloggen is vooral voor de uitstraling; de pagina bevat ook doorgaan als gast. -->
+                <a class="icon-link" asp-page="/Account/Inloggen">
+                    <i data-lucide="user-round"></i>
+                    <span>Inloggen</span>
+                </a>
+                <!-- Orderhistorie hoort bij UC04.
+                     Relatie: deze link opent Bestellingen/Geschiedenis.cshtml, waar geplaatste bestellingen uit SQL Server worden getoond.
+                     Door deze link in de header te zetten kan de klant de orderhistorie vanaf elke pagina vinden. -->
+                <a class="icon-link" asp-page="/Bestellingen/Geschiedenis">
+                    <i data-lucide="history"></i>
+                    <span>Orderhistorie</span>
+                </a>
+
+                <!-- Winkelmand hoort bij UC02 en UC03.
+                     Relatie: deze link opent Winkelmand/Overzicht.cshtml, waar WinkelmandItems uit Session worden getoond. -->
+                <div class="cart-menu" id="cartMenu">
+                    <a class="icon-link cart-link" asp-page="/Winkelmand/Overzicht"
+                       aria-haspopup="true" aria-controls="cartPreview">
+                        <span class="cart-icon-wrap">
+                            <i data-lucide="shopping-cart"></i>
+                            @if (winkelmandAantal > 0)
+                            {
+                                <span class="cart-badge" aria-label="@winkelmandAantal producten in winkelmand">
+                                    @(winkelmandAantal > 99 ? "99+" : winkelmandAantal.ToString())
+                                </span>
+                            }
+                        </span>
+                        <span>Winkelmand</span>
+                    </a>
+
+                    <section class="cart-preview" id="cartPreview" aria-label="Voorvertoning winkelmand">
+                        <div class="cart-preview-header">
+                            <strong>Winkelmand</strong>
+                            <span>@winkelmandAantal artikel(en)</span>
+                        </div>
+                        @if (winkelmandItems.Count == 0)
+                        {
+                            <div class="cart-preview-empty">
+                                <i data-lucide="shopping-cart"></i>
+                                <p>Je winkelmand is nog leeg.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="cart-preview-items">
+                                @foreach (var item in winkelmandItems.Take(4))
+                                {
+                                    <div class="cart-preview-item">
+                                        <span class="cart-preview-icon"><i data-lucide="@item.Icoon"></i></span>
+                                        <span>
+                                            <strong>@item.ProductNaam</strong>
+                                            <small>@item.Aantal x @item.Prijs.ToString("C")</small>
+                                        </span>
+                                    </div>
+                                }
+                                @if (winkelmandItems.Count > 4)
+                                {
+                                    <small class="cart-preview-more">En nog @(winkelmandItems.Count - 4) product(en)</small>
+                                }
+                            </div>
+                            <div class="cart-preview-total">
+                                <span>Totaal</span>
+                                <strong>@winkelmandTotaal.ToString("C")</strong>
+                            </div>
+                            <a class="button cart-preview-button" asp-page="/Winkelmand/Overzicht">
+                                Bekijk winkelmand <i data-lucide="arrow-right"></i>
+                            </a>
+                        }
+                    </section>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Categorie-navigatie helpt gebruikers sneller producten vinden. -->
+        <nav class="category-nav" aria-label="Categorieën">
+            <a asp-page="/Producten/Overzicht"><i data-lucide="grid-3x3"></i> Alle producten</a>
+            <a asp-page="/Producten/Overzicht" asp-route-categorie="Bevestiging"><i data-lucide="bolt"></i> Bevestiging</a>
+            <a asp-page="/Producten/Overzicht" asp-route-categorie="Lagers"><i data-lucide="circle-dot"></i> Lagers</a>
+            <a asp-page="/Producten/Overzicht" asp-route-categorie="Aandrijving"><i data-lucide="settings"></i> Aandrijving</a>
+            <a asp-page="/Producten/Overzicht" asp-route-categorie="Hydrauliek"><i data-lucide="droplets"></i> Hydrauliek</a>
+            <a asp-page="/Service/VeelgesteldeVragen"><i data-lucide="headphones"></i> Service</a>
+        </nav>
+    </header>
+
+    @* RenderBody() is de plek waar de inhoud van de huidige pagina wordt ingevoegd.
+       Voorbeeld: als je Producten/Overzicht opent, komt de HTML van die pagina hier terecht. *@
+    <main class="page-shell">
+        @RenderBody()
+    </main>
+
+    @if (!string.IsNullOrWhiteSpace(toegevoegdProductNaam))
+    {
+        <aside class="cart-toast" id="cartToast" role="status" aria-live="polite">
+            <span class="cart-toast-icon"><i data-lucide="@(string.IsNullOrWhiteSpace(toegevoegdProductIcoon) ? "package" : toegevoegdProductIcoon)"></i></span>
+            <span>
+                <strong>Toegevoegd aan je winkelmand</strong>
+                <small>@toegevoegdProductAantal x @toegevoegdProductNaam</small>
+            </span>
+            <button type="button" class="cart-toast-close" aria-label="Melding sluiten">
+                <i data-lucide="x"></i>
+            </button>
+        </aside>
+    }
+
+    <!-- Uitgebreide footer voor een echte webshopuitstraling.
+         De footer is bewust weer “normaal lang” gemaakt: hij loopt over de volledige breedte van het scherm.
+         De inhoud staat in .footer-inner, zodat de tekst netjes uitgelijnd blijft met de rest van de website. -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div>
+                <strong><i data-lucide="wrench"></i> Matrix inc.</strong>
+                <p>Mechanische onderdelen voor onderhoud, reparatie, montage en machinebouw.</p>
+                <p class="muted">Voor bedrijven, werkplaatsen en technische hobbyisten.</p>
+            </div>
+            <div>
+                <strong><i data-lucide="package-search"></i> Assortiment</strong>
+                <a asp-page="/Producten/Overzicht" asp-route-categorie="Bevestiging"><i data-lucide="bolt"></i> Bevestiging</a>
+                <a asp-page="/Producten/Overzicht" asp-route-categorie="Lagers"><i data-lucide="circle-dot"></i> Lagers</a>
+                <a asp-page="/Producten/Overzicht" asp-route-categorie="Aandrijving"><i data-lucide="cog"></i> Aandrijving</a>
+                <a asp-page="/Producten/Overzicht" asp-route-categorie="Hydrauliek"><i data-lucide="droplets"></i> Hydrauliek</a>
+            </div>
+            <div>
+                <strong><i data-lucide="life-buoy"></i> Service</strong>
+                <a asp-page="/Service/VeelgesteldeVragen"><i data-lucide="circle-help"></i> Veelgestelde vragen</a>
+                <a asp-page="/Contact/Contactformulier"><i data-lucide="mail"></i> Contact</a>
+                <a asp-page="/Bestellingen/Geschiedenis"><i data-lucide="history"></i> Orderhistorie</a>
+                <a asp-page="/Winkelmand/Overzicht"><i data-lucide="shopping-cart"></i> Winkelmand</a>
+            </div>
+            <div>
+                <strong><i data-lucide="shield-check"></i> Zeker bestellen</strong>
+                <p class="muted"><i data-lucide="check"></i> Duidelijke prijzen en voorraadindicatie.</p>
+                <p class="muted"><i data-lucide="check"></i> Eenvoudig bestelproces zonder onnodige stappen.</p>
+                <p class="muted"><i data-lucide="check"></i> Bestellingen terug te vinden in de orderhistorie.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lucide icons worden als SVG-iconen in de pagina gezet. -->
+    @* Lucide is een iconenbibliotheek.
+       De <i data-lucide="..."></i> elementen worden door dit script omgezet naar echte SVG-iconen. *@
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
+
+        const cartMenu = document.getElementById('cartMenu');
+        if (cartMenu) {
+            let closeCartTimer;
+
+            cartMenu.addEventListener('mouseenter', () => {
+                clearTimeout(closeCartTimer);
+                cartMenu.classList.add('is-open');
+            });
+
+            cartMenu.addEventListener('mouseleave', () => {
+                clearTimeout(closeCartTimer);
+                closeCartTimer = setTimeout(() => cartMenu.classList.remove('is-open'), 400);
+            });
+
+            cartMenu.addEventListener('focusin', () => {
+                clearTimeout(closeCartTimer);
+                cartMenu.classList.add('is-open');
+            });
+
+            cartMenu.addEventListener('focusout', event => {
+                if (!cartMenu.contains(event.relatedTarget)) {
+                    closeCartTimer = setTimeout(() => cartMenu.classList.remove('is-open'), 400);
+                }
+            });
+        }
+
+        const cartToast = document.getElementById('cartToast');
+        if (cartToast) {
+            const closeToast = () => cartToast.classList.add('is-hidden');
+            cartToast.querySelector('.cart-toast-close').addEventListener('click', closeToast);
+            setTimeout(closeToast, 4500);
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

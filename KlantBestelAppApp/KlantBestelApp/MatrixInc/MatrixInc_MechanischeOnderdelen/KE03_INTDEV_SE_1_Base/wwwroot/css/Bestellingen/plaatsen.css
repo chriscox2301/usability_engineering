@@ -1,0 +1,72 @@
+/* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/wwwroot/css/Bestellingen/plaatsen.css
+   Dit CSS-bestand hoort bij één pagina of onderdeel en regelt alleen de vormgeving.
+   Er staat geen C# logica in CSS. */
+/* OPBOUW VAN DIT CSS-BESTAND
+   - Selectors zoals .card of .hero verwijzen naar class="card" of class="hero" in de bijbehorende .cshtml pagina.
+   - CSS verandert alleen vormgeving: kleur, ruimte, grootte, grid/flex en responsive gedrag.
+   - CSS verandert geen data, winkelmand of bestelling. Die logica staat in de .cshtml.cs bestanden. */
+
+
+
+/* CSS voor Bestellingen/Plaatsen.cshtml. Doel: bestelling bevestigen overzichtelijk maken. */
+.page-title h1 { margin: .5rem 0; font-size: 2.3rem; }
+.checkout-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1rem; align-items: start; }
+.checkout-card, .side-info, .message-card, .success-card { padding: 1.25rem; }
+.checkout-card h2, .side-info h2 { display:flex; align-items:center; gap:.4rem; }
+.order-line { display: flex; justify-content: space-between; gap: 1rem; padding: .75rem 0; border-bottom: 1px solid var(--line); }
+.order-line.total { border-bottom: 0; font-size: 1.25rem; }
+.checkout-card form { margin-top: 1rem; }
+.checkout-card button { width: 100%; }
+.side-info a { color: var(--blue); font-weight: 700; display:inline-flex; align-items:center; gap:.35rem; }
+.success-card { text-align: center; display: grid; place-items: center; gap: .8rem; }
+.success-card svg { color: var(--success); width: 64px; height: 64px; }
+.actions { display: flex; gap: .8rem; flex-wrap: wrap; justify-content: center; }
+.message-card svg { color: var(--blue); width: 44px; height: 44px; }
+@media (max-width: 850px) { .checkout-layout { grid-template-columns: 1fr; } }
+
+
+/* Eenvoudig gegevensformulier op Bestellingen/Plaatsen.cshtml.
+   Relatie: deze velden horen bij de BindProperty properties Naam, Email, Adres, Postcode en Plaats in Plaatsen.cshtml.cs.
+   Dit is alleen styling; het opslaan gebeurt in de C# PageModel-code. */
+.checkout-form { margin-top: 1rem; }
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .9rem; margin: .8rem 0 1.3rem; }
+.form-field { display: grid; gap: .35rem; }
+.form-field.full { grid-column: 1 / -1; }
+.form-field label { font-weight: 800; color: var(--blue-dark); }
+.form-field input { border: 1px solid var(--line); border-radius: 10px; padding: .85rem; background: white; }
+.form-field input:focus { outline: 2px solid #bfdbfe; border-color: var(--blue); }
+@media (max-width: 650px) { .form-grid { grid-template-columns: 1fr; } }
+
+/* Nieuwe checkout-indeling: links login + uitklapbare gastcheckout, rechts account aanmaken. */
+.checkout-main { display: grid; gap: 1rem; }
+.login-prompt-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem; }
+.login-prompt-card h2 { display: flex; align-items: center; gap: .4rem; margin-top: 0; }
+.login-button, .account-button { white-space: nowrap; justify-content: center; }
+
+.guest-dropdown { padding: 0; overflow: hidden; }
+.guest-dropdown summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem; font-size: 1.35rem; font-weight: 800; color: var(--dark); }
+.guest-dropdown summary::-webkit-details-marker { display: none; }
+.guest-dropdown summary span { display: inline-flex; align-items: center; gap: .4rem; }
+.guest-dropdown .chevron { transition: transform .2s ease; }
+.guest-dropdown[open] .chevron { transform: rotate(180deg); }
+.guest-dropdown > p, .guest-dropdown > form { padding-left: 1.25rem; padding-right: 1.25rem; }
+.guest-dropdown > form { padding-bottom: 1.25rem; }
+
+.form-field textarea { border: 1px solid var(--line); border-radius: 10px; padding: .85rem; background: white; min-height: 92px; resize: vertical; font: inherit; }
+.form-field textarea:focus { outline: 2px solid #bfdbfe; border-color: var(--blue); }
+.side-info .button { width: 100%; margin-top: .8rem; }
+
+@media (max-width: 650px) {
+    .login-prompt-card { align-items: stretch; flex-direction: column; }
+    .login-button { width: 100%; }
+}
+
+
+/* Betaalmethodes voor bestellen als gast. Zelfde opties als op de betaalpagina voor ingelogde gebruikers. */
+.guest-payment-section { margin: 1rem 0 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.guest-payment-section h2 { display: flex; align-items: center; gap: .4rem; margin-bottom: .35rem; }
+.payment-options { display: grid; gap: .75rem; margin: .9rem 0 0; }
+.payment-option { display: flex; align-items: center; gap: .75rem; border: 1px solid var(--line); border-radius: 12px; padding: .9rem 1rem; background: #fff; cursor: pointer; font-weight: 800; color: var(--blue-dark); }
+.payment-option input { width: 18px; height: 18px; accent-color: var(--blue); }
+.payment-option span { display: inline-flex; align-items: center; gap: .5rem; }
+.payment-option:hover { border-color: var(--blue); box-shadow: 0 6px 18px rgba(37, 99, 235, .10); }

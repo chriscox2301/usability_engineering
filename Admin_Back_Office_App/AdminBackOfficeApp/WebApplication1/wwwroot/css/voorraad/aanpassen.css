@@ -1,0 +1,27 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/voorraad/aanpassen.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/voorraad/aanpassen.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Voorraad/Aanpassen.cshtml */
+.form-card.narrow {
+    max-width: 620px;
+    padding: 24px;
+}
+
+.form-card.narrow p {
+    color: var(--muted);
+    margin-bottom: 18px;
+}
+
+.form-card.narrow input[type="number"] {
+    font-size: 24px;
+    font-weight: 800;
+}

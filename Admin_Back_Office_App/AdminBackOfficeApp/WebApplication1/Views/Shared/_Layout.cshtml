@@ -1,0 +1,102 @@
+@inject WebApplication1.Data.KlantenserviceRepository KlantenserviceRepository
+@{
+    var aantalOpenstaandeKlachten = KlantenserviceRepository.GetAantalOpenstaandeKlachten();
+}
+@*
+    TECHNISCHE UITLEG _Layout.cshtml
+    Dit bestand is de gedeelde HTML-layout voor alle pagina's.
+    De controller geeft een View terug met return View(...).
+    Die gekozen View wordt in deze layout geplaatst via RenderBody().
+    RenderSectionAsync("Styles") laadt optionele pagina-specifieke CSS.
+    De sidebar bevat links naar MVC-routes zoals Dashboard, Producten en Bestellingen.
+    site.js activeert Lucide-iconen en het mobiele hamburgermenu.
+*@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Matrix Inc. Back-office</title>
+
+    @* Bootstrap basis-CSS uit wwwroot/lib. *@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    @* site.css bevat algemene styling voor layout/sidebar/topbar. *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="admin-shell">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <a class="brand" asp-controller="Dashboard" asp-action="Index">
+                <span class="brand-icon"><i data-lucide="boxes"></i></span>
+                <span>
+                    <strong>Matrix Inc.</strong>
+                    <small>Back-office</small>
+                </span>
+            </a>
+
+            <nav class="side-nav" aria-label="Back-office navigatie">
+                <a asp-controller="Dashboard" asp-action="Index"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a asp-controller="Producten" asp-action="Index"><i data-lucide="package-search"></i> Producten</a>
+                <a asp-controller="Voorraad" asp-action="Index"><i data-lucide="warehouse"></i> Voorraad</a>
+                <a asp-controller="Categorieen" asp-action="Index"><i data-lucide="folder-tree"></i> Categorieën</a>
+                <a asp-controller="Bestellingen" asp-action="Index"><i data-lucide="clipboard-list"></i> Bestellingen</a>
+                <a class="nav-with-badge" asp-controller="Klantenservice" asp-action="Index"><span class="nav-label"><i data-lucide="headset"></i> Klantenservice</span>@if (aantalOpenstaandeKlachten > 0) { <span class="nav-count">@aantalOpenstaandeKlachten</span> }</a>
+                <a asp-controller="Leveranciers" asp-action="Index"><i data-lucide="truck"></i> Leveranciers</a>
+                <a asp-controller="Rapportages" asp-action="Index"><i data-lucide="bar-chart-3"></i> Rapportages</a>
+                <a asp-controller="Medewerkers" asp-action="Index"><i data-lucide="users"></i> Medewerkers</a>
+                <a asp-controller="Instellingen" asp-action="Index"><i data-lucide="settings"></i> Instellingen</a>
+            </nav>
+        </aside>
+
+        @* Backdrop is alleen zichtbaar op mobiel wanneer het hamburgermenu open staat. *@
+        <button type="button" class="sidebar-backdrop" id="sidebarBackdrop" aria-label="Menu sluiten"></button>
+
+        <main class="admin-main">
+            <header class="topbar">
+                @* Hamburgermenu voor mobiel. Op desktop blijft de sidebar gewoon zichtbaar. *@
+                <button type="button" class="mobile-menu-button" id="mobileMenuButton" aria-label="Menu openen" aria-controls="adminSidebar" aria-expanded="false">
+                    <i data-lucide="menu"></i>
+                </button>
+
+                <div class="topbar-search">
+                    <i data-lucide="search"></i>
+                    <input type="search" placeholder="Zoek product, order, klant of leverancier..." />
+                </div>
+
+                <div class="topbar-actions">
+                    <button type="button" class="icon-button" title="Meldingen"><i data-lucide="bell"></i><span class="dot"></span></button>
+                    <button type="button" class="icon-button" title="Help"><i data-lucide="circle-help"></i></button>
+                    <div class="user-chip"><i data-lucide="user-round"></i><span>Back-office medewerker</span></div>
+                </div>
+            </header>
+
+            <section class="content-wrap">
+                @* Hier wordt de actieve View geplaatst, bijvoorbeeld Views/Dashboard/Index.cshtml. *@
+                @RenderBody()
+            </section>
+
+            <footer class="admin-footer">
+                <div>
+                    <strong>Matrix Inc.</strong> · Back-office
+                </div>
+                <div class="footer-links">
+                    <span><i data-lucide="shield-check"></i> Rollen & rechten</span>
+                    <span><i data-lucide="history"></i> Auditlog</span>
+                    <span><i data-lucide="life-buoy"></i> Support</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    @* site.js bevat UI-code voor iconen en mobiel menu. *@
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

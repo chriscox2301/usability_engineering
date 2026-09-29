@@ -1,0 +1,90 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/voorraad/index.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/voorraad/index.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Voorraad/Index.cshtml */
+.stock-board {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.stock-card {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+    grid-template-areas:
+        "icon text number"
+        "icon text status"
+        "icon text action";
+    gap: 10px 14px;
+    align-items: center;
+    padding: 18px;
+}
+
+.stock-card > svg {
+    grid-area: icon;
+    width: 54px;
+    height: 54px;
+    padding: 13px;
+    border-radius: 16px;
+    background: #eef4ff;
+    color: var(--primary);
+}
+
+.stock-card h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.stock-card p {
+    margin: 4px 0 0;
+    color: var(--muted);
+}
+
+.stock-card strong {
+    grid-area: number;
+    font-size: 34px;
+    line-height: 1;
+    text-align: right;
+}
+
+.stock-card span {
+    grid-area: status;
+    justify-self: end;
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: #ecfdf3;
+    color: var(--success);
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.stock-card a {
+    grid-area: action;
+    justify-self: end;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.stock-card.is-low {
+    border-color: #fdba74;
+    background: linear-gradient(180deg, #fff7ed, #ffffff);
+}
+
+.stock-card.is-low span {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+@media (max-width: 860px) {
+    .stock-board { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,148 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Bestellingen.GeschiedenisModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Bestellingen/Geschiedenis.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De orderkaarten zijn klikbaar via <details>/<summary>. *@
+
+@{
+    ViewData["Title"] = "Orderhistorie";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Bestellingen/geschiedenis.css" asp-append-version="true" />
+}
+
+<!-- UC04 Orderhistorie bekijken: de klant ziet eerder geplaatste bestellingen. -->
+<div class="page-title">
+    <span class="badge"><i data-lucide="history"></i> Orderhistorie</span>
+    <h1>Orderhistorie</h1>
+    <p class="muted">Klik op een bestelling om details, bezorgmelding en acties te bekijken.</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.ActieMelding))
+{
+    <div class="action-alert card">
+        <i data-lucide="info"></i>
+        <span>@Model.ActieMelding</span>
+    </div>
+}
+
+@if (!Model.Bestellingen.Any())
+{
+    <section class="card empty-history">
+        <i data-lucide="package-search"></i>
+        <h2>Nog geen bestellingen</h2>
+        <p class="muted">Plaats een bestelling om deze hier terug te zien.</p>
+        <a class="button" asp-page="/Producten/Overzicht">Bekijk producten</a>
+    </section>
+}
+else
+{
+    <section class="history-list">
+        @foreach (var bestelling in Model.Bestellingen)
+        {
+            var eersteRegel = bestelling.Regels.FirstOrDefault();
+            var statusClass = bestelling.Status.ToLower().Replace(" ", "-");
+            var isGeannuleerd = string.Equals(bestelling.Status, "Geannuleerd", StringComparison.OrdinalIgnoreCase);
+
+            <details class="history-card card">
+                <summary class="history-summary">
+                    <div class="summary-main">
+                        <h2>@bestelling.Ordernummer</h2>
+                        <p class="muted">@bestelling.Besteldatum.ToString("dd-MM-yyyy HH:mm")</p>
+                        @if (eersteRegel != null)
+                        {
+                            <p class="summary-product">@eersteRegel.Aantal x @eersteRegel.ProductNaam</p>
+                        }
+                        <span class="click-hint"><i data-lucide="mouse-pointer-click"></i> Klik voor details en acties</span>
+                    </div>
+                    <div class="summary-side">
+                        <strong class="status @statusClass">@bestelling.Status</strong>
+                        <i class="chevron" data-lucide="chevron-down"></i>
+                    </div>
+                </summary>
+
+                <div class="history-details">
+                    @if (!isGeannuleerd)
+                    {
+                        <section class="customer-delivery-progress-card" aria-label="Voortgang pakketbezorging">
+                            <div class="customer-delivery-header">
+                                <div>
+                                    <span class="progress-eyebrow">Pakketbezorging</span>
+                                    <p>@bestelling.BezorgProgressTekst</p>
+                                </div>
+                                <strong class="status @statusClass">@bestelling.Status</strong>
+                            </div>
+
+                            <div class="customer-progress-track">
+                                <div class="customer-progress-fill" style="width:@bestelling.BezorgProgressPercentage%"></div>
+                            </div>
+
+                            <div class="customer-progress-steps">
+                                <span>Ontvangen</span>
+                                <span>Verwerkt</span>
+                                <span>Ingepakt</span>
+                                <span>Onderweg</span>
+                                <span>Bezorgd</span>
+                            </div>
+                        </section>
+
+                        <div class="delivery-message track-trace-message">
+                            <i data-lucide="map-pinned"></i>
+                            <div>
+                                <strong>Track &amp; trace</strong>
+                                <p>Je ontvangt de track &amp; trace-link per e-mail zodra je bestelling onderweg is.</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="delivery-message cancelled-order-message">
+                            <i data-lucide="circle-x"></i>
+                            <div>
+                                <strong>Bestelling geannuleerd</strong>
+                                <p>Deze bestelling is geannuleerd. Daarom wordt de bezorgstatus niet meer getoond.</p>
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(bestelling.KlantNaam) || !string.IsNullOrWhiteSpace(bestelling.VerzendAdres))
+                    {
+                        <div class="history-customer">
+                            <span><i data-lucide="user-round"></i> @bestelling.KlantNaam</span>
+                            <span><i data-lucide="mail"></i> @bestelling.Email</span>
+                            <span><i data-lucide="map-pin"></i> @bestelling.VerzendAdres</span>
+                        </div>
+                    }
+
+
+                    <div class="history-lines">
+                        @foreach (var regel in bestelling.Regels)
+                        {
+                            <div><span>@regel.Aantal x @regel.ProductNaam</span><strong>€ @regel.Subtotaal.ToString("0.00")</strong></div>
+                        }
+                    </div>
+
+                    <div class="history-detail-row">
+                        <span>Orderopmerking</span>
+                        <p>@(string.IsNullOrWhiteSpace(bestelling.OrderOpmerkingen) ? "Geen orderopmerking ingevuld." : bestelling.OrderOpmerkingen)</p>
+                    </div>
+
+                    <div class="history-total">
+                        <span>Totaal</span>
+                        <strong>€ @bestelling.Totaalbedrag.ToString("0.00")</strong>
+                    </div>
+
+                    <div class="order-actions">
+                        <form method="post" asp-page-handler="Annuleer" asp-route-ordernummer="@bestelling.Ordernummer">
+                            <button type="submit" class="secondary"><i data-lucide="ban"></i> Annulering aanvragen</button>
+                        </form>
+                        <form method="post" asp-page-handler="Klacht" asp-route-ordernummer="@bestelling.Ordernummer">
+                            <button type="submit" class="ghost"><i data-lucide="message-square-warning"></i> Klacht melden</button>
+                        </form>
+                    </div>
+                </div>
+            </details>
+        }
+    </section>
+}

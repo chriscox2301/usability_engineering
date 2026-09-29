@@ -1,0 +1,17 @@
+@model List<Medewerker>
+@*
+    JUNIOR-UITLEG Views/Medewerkers/Index.cshtml
+    Deze View hoort bij de controller met dezelfde mapnaam.
+    Relatie: de controller haalt data op via repositories en geeft die data door aan deze View.
+*@
+@{ ViewData["Title"] = "Medewerkers"; }
+@section Styles { <link rel="stylesheet" href="~/css/medewerkers/index.css" asp-append-version="true" /> }
+
+@* Medewerkerspagina laat zien hoe rollen en rechten in een echte back-office kunnen voorkomen. *@
+<section class="page-heading"><div><p class="eyebrow">Gebruikersbeheer</p><h1>Medewerkers</h1><p>Bekijk rollen, toegang en laatste activiteit.</p></div><button class="btn btn-primary" type="button"><i data-lucide="user-plus"></i> Medewerker toevoegen</button></section>
+<section class="team-grid">
+@foreach (var medewerker in Model)
+{
+    <article class="team-card"><span class="avatar"><i data-lucide="user-round"></i></span><h2>@medewerker.Naam</h2><p>@medewerker.Rol</p><p>@medewerker.Email</p><small>Laatst actief: @medewerker.LaatstActief</small></article>
+}
+</section>

@@ -1,0 +1,25 @@
+@model List<Product>
+@{ ViewData["Title"] = "Voorraad beheren"; }
+@section Styles { <link rel="stylesheet" href="~/css/voorraad/index.css" asp-append-version="true" /> }
+
+
+@*
+    JUNIOR-UITLEG Voorraad/Index.cshtml
+    Relatie met controller: VoorraadController.Index levert producten gesorteerd op voorraad.
+    Relatie met dashboard: dezelfde lage voorraad wordt gebruikt voor KPI "Lage voorraad".
+*@
+@* Voorraadbeheer helpt de medewerker producten met lage voorraad snel te vinden. *@
+<section class="page-heading"><div><p class="eyebrow">Magazijnsignalen</p><h1>Voorraad beheren</h1><p>Controleer voorraadniveaus en pas aantallen aan waar nodig.</p></div></section>
+@if (TempData["Melding"] != null) { <div class="alert alert-info">@TempData["Melding"]</div> }
+<section class="stock-board">
+@foreach (var product in Model)
+{
+    <article class="stock-card @(product.HeeftLageVoorraad() ? "is-low" : "")">
+        <i data-lucide="@product.Icoon"></i>
+        <div><h2>@product.Naam</h2><p>@product.Artikelnummer · @product.Categorie</p></div>
+        <strong>@product.Voorraad</strong>
+        <span>@(product.HeeftLageVoorraad() ? "Bijbestellen" : "Voldoende")</span>
+        <a asp-action="Aanpassen" asp-route-id="@product.Id">Aanpassen</a>
+    </article>
+}
+</section>

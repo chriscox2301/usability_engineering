@@ -1,0 +1,30 @@
+/*
+    TECHNISCHE CSS-UITLEG
+    Bestand: wwwroot/css/producten/details.css
+    Dit bestand bevat styling voor de bijbehorende Razor View.
+    Klassen in deze CSS worden gekoppeld via class="..." in de .cshtml-bestanden.
+*/
+/*
+    JUNIOR-UITLEG CSS
+    Bestand: wwwroot/css/producten/details.css
+    Relatie: deze CSS wordt geladen door de bijbehorende View of door _Layout.cshtml.
+    Doel: styling gescheiden houden van HTML, zodat junior developers sneller zien welke stijl bij welke pagina hoort.
+*/
+/* Styling voor Views/Producten/Details.cshtml */
+.product-hero {
+    display: grid;
+    place-items: center;
+    min-height: 320px;
+    background: linear-gradient(135deg, #eef4ff, #fff);
+}
+
+.product-hero svg {
+    width: 120px;
+    height: 120px;
+    color: var(--primary);
+}
+
+.detail-card h2,
+.detail-card h1 {
+    font-weight: 800;
+}

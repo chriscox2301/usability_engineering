@@ -1,0 +1,44 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Service.VeelgesteldeVragenModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Service/VeelgesteldeVragen.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+
+@* EXTRA BEGINNER-UITLEG
+   - @page betekent: dit bestand is een Razor Page die direct via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen <section>, <div>, <article> en <form> is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+@{
+    ViewData["Title"] = "Service";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Service/veelgesteldevragen.css" asp-append-version="true" />
+}
+@* PAGINA-UITLEG VOOR JUNIOR
+   Doel: decoratieve servicepagina zoals echte webshops hebben.
+   Relatie: bereikbaar vanuit header en footer.
+   Logica: geen werkende C# logica. *@
+
+
+<!-- Servicepagina met extra informatie voor een realistische webshop. -->
+<section class="service-hero card">
+    <i data-lucide="headphones"></i>
+    <h1>Waarmee kunnen we je helpen?</h1>
+    <p class="muted">Antwoorden over bestellen, levering en mechanische onderdelen.</p>
+</section>
+@* FAQ-grid: meerdere informatiekaarten naast/onder elkaar.
+   Dit is decoratieve HTML voor een echte webshopuitstraling.
+   Er wordt geen data uit C# opgehaald. *@
+<div class="faq-grid">
+    <article class="card"><i data-lucide="truck"></i><h2>Wanneer wordt mijn bestelling geleverd?</h2><p>Bij elk product staat een levertijd. Veel producten zijn morgen leverbaar.</p></article>
+    <article class="card"><i data-lucide="user-round-check"></i><h2>Kan ik als gast bestellen?</h2><p>Ja, je kunt producten bestellen zonder eerst een account te maken.</p></article>
+    <article class="card"><i data-lucide="sliders-horizontal"></i><h2>Kan ik producten filteren?</h2><p>Op de productpagina staan duidelijke filterkopjes voor categorie, prijs, merk en levering.</p></article>
+    <article class="card"><i data-lucide="rotate-ccw"></i><h2>Kan ik iets retourneren?</h2><p>Retourinformatie staat bij je bestelling en via de klantenservice.</p></article>
+</div>

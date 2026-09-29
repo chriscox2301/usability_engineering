@@ -1,0 +1,82 @@
+/* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/wwwroot/css/Winkelmand/overzicht.css
+   Dit CSS-bestand hoort bij één pagina of onderdeel en regelt alleen de vormgeving.
+   Er staat geen C# logica in CSS. */
+/* OPBOUW VAN DIT CSS-BESTAND
+   - Selectors zoals .card of .hero verwijzen naar class="card" of class="hero" in de bijbehorende .cshtml pagina.
+   - CSS verandert alleen vormgeving: kleur, ruimte, grootte, grid/flex en responsive gedrag.
+   - CSS verandert geen data, winkelmand of bestelling. Die logica staat in de .cshtml.cs bestanden. */
+
+
+
+/* CSS voor Winkelmand/Overzicht.cshtml. Doel: gekozen producten en besteloverzicht duidelijk tonen. */
+.page-title h1 { margin: .5rem 0; font-size: 2.3rem; }
+.empty-card { padding: 3rem; text-align: center; display: grid; place-items: center; gap: .8rem; }
+.empty-card svg { width: 54px; height: 54px; color: var(--blue); }
+.cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1rem; align-items: start; }
+.cart-list { padding: 1rem; display: grid; gap: 1rem; }
+.cart-item { display: grid; grid-template-columns: 80px 1fr auto; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 1rem; }
+.cart-item:last-child { border-bottom: 0; padding-bottom: 0; }
+.cart-icon {
+    /* Producticoon in winkelmand. Zelfde Lucide-icoon als op de productenpagina. */
+    width: 80px;
+    height: 80px;
+    border-radius: 14px;
+    background: #f1f5f9;
+    display: grid;
+    place-items: center;
+    color: var(--blue-dark);
+}
+.cart-icon svg { width: 38px; height: 38px; stroke-width: 1.8; }
+.cart-item h2 { margin: 0 0 .3rem; font-size: 1.15rem; }
+.cart-price { display: grid; gap: .35rem; text-align: right; align-content: center; }
+.link-button { background: transparent; color: var(--blue); padding: 0; font-weight: 700; }
+.summary { padding: 1rem; display: grid; gap: .85rem; position: sticky; top: 130px; }
+.summary div { display: flex; justify-content: space-between; gap: 1rem; }
+.summary hr { width: 100%; border: 0; border-top: 1px solid var(--line); }
+.summary .total { font-size: 1.25rem; }
+@media (max-width: 850px) { .cart-layout, .cart-item { grid-template-columns: 1fr; } .cart-price { text-align: left; } .summary { position: static; } }
+
+
+/* AANTAL AANPASSEN IN WINKELMAND
+   Deze styling hoort bij het formulier in Winkelmand/Overzicht.cshtml.
+   Relatie met UC02: de klant kan het aantal van een gekozen product wijzigen.
+   Relatie met WinkelmandItem: het inputveld past de property Aantal aan via C# in Overzicht.cshtml.cs. */
+.quantity-form {
+    margin: .75rem 0;
+    display: grid;
+    gap: .35rem;
+    max-width: 280px;
+}
+
+.quantity-form label {
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.quantity-row {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.quantity-row input {
+    width: 90px;
+    padding: .65rem .75rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-weight: 800;
+}
+
+.small-button {
+    border: 0;
+    border-radius: 10px;
+    padding: .7rem .9rem;
+    background: var(--blue);
+    color: white;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.small-button:hover {
+    filter: brightness(.95);
+}

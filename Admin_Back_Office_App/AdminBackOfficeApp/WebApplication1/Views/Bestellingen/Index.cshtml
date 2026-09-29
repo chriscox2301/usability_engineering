@@ -1,0 +1,83 @@
+@model List<Bestelling>
+@{
+    ViewData["Title"] = "Bestellingen bekijken";
+    string gekozenStatus = ViewBag.Status as string ?? "Alle";
+    string gekozenPrioriteit = ViewBag.Prioriteit as string ?? "Alle";
+    var statusOpties = new[] { "Nieuw", "In behandeling", "Ingepakt", "Onderweg", "Bezorgd", "Annulering aangevraagd", "Geannuleerd", "Klacht gemeld" };
+}
+@section Styles { <link rel="stylesheet" href="~/css/bestellingen/index.css" asp-append-version="true" /> }
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Orders</p>
+        <h1>Bestellingen controleren</h1>
+        <p>Orders uit de klant-bestelapplicatie komen hier binnen via dezelfde SQL Server database.</p>
+    </div>
+</section>
+
+@if (TempData["Melding"] != null)
+{
+    <div class="alert-message">@TempData["Melding"]</div>
+}
+
+<form class="filter-bar customer-search" method="get" asp-controller="Bestellingen" asp-action="Index">
+    <div class="wide-filter"><label>Klant / order zoeken</label><input name="klant" value="@ViewBag.Klant" placeholder="Klantnaam of ordernummer" /></div>
+    <div>
+        <label>Status</label>
+        <select name="status">
+            <option value="Alle">Alle statussen</option>
+            @foreach (var status in statusOpties)
+            {
+                if (gekozenStatus == status)
+                {
+                    <option value="@status" selected>@status</option>
+                }
+                else
+                {
+                    <option value="@status">@status</option>
+                }
+            }
+        </select>
+    </div>
+    <div>
+        <label>Prioriteit</label>
+        <select name="prioriteit">
+            <option value="Alle">Alle prioriteiten</option>
+            @if (gekozenPrioriteit == "Hoog") { <option value="Hoog" selected>Hoog</option> } else { <option value="Hoog">Hoog</option> }
+            @if (gekozenPrioriteit == "Normaal") { <option value="Normaal" selected>Normaal</option> } else { <option value="Normaal">Normaal</option> }
+        </select>
+    </div>
+    <div class="filter-actions"><button class="btn btn-primary" type="submit"><i data-lucide="search"></i> Zoeken</button></div>
+</form>
+
+<section class="table-card">
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Order</th>
+            <th>Klant</th>
+            <th>Datum</th>
+            <th>Status</th>
+            <th>Inpakcontrole</th>
+            <th>Bezorger</th>
+            <th>Totaal</th>
+            <th>Acties</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var bestelling in Model)
+    {
+        <tr>
+            <td><strong>@bestelling.Ordernummer</strong><small class="muted">@bestelling.Prioriteit</small></td>
+            <td>@bestelling.KlantNaam</td>
+            <td>@bestelling.Datum</td>
+            <td><span class="badge badge-soft">@bestelling.Status</span><small class="muted">@bestelling.PakketStatus</small></td>
+            <td>@bestelling.AantalIngepakteRegels / @bestelling.AantalRegels regels</td>
+            <td>@(string.IsNullOrWhiteSpace(bestelling.BezorgerNaam) ? "Nog niet gekozen" : bestelling.BezorgerNaam)</td>
+            <td>€ @bestelling.Totaal.ToString("0.00")</td>
+            <td><a asp-action="Details" asp-route-id="@bestelling.Id" class="btn btn-primary">Details</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+</section>

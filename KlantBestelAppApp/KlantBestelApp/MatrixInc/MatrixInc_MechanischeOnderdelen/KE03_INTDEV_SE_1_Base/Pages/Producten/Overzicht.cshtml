@@ -1,0 +1,162 @@
+@page
+@model KE03_INTDEV_SE_1_Base.Pages.Producten.OverzichtModel
+
+@* JUNIOR-UITLEG: Bestand: KE03_INTDEV_SE_1_Base/Pages/Producten/Overzicht.cshtml
+   Dit Razor Page-bestand bevat de HTML die de gebruiker in de browser ziet.
+   De bijbehorende .cshtml.cs file regelt alleen de noodzakelijke data/logica. *@
+
+
+@* EXTRA BEGINNER-UITLEG
+   Deze productenpagina ondersteunt twee use cases:
+   UC01: producten bekijken.
+   UC02: product direct toevoegen aan winkelmand.
+
+   Uitleg van Razor:
+   - @page betekent dat dit bestand een Razor Page is die via een URL geopend kan worden.
+   - @model koppelt deze HTML-pagina aan de C# PageModel-class in het .cshtml.cs bestand.
+   - asp-page is een Razor Tag Helper. Die maakt automatisch de juiste link naar een andere pagina.
+   - @Model betekent: gegevens die vanuit C# naar deze HTML-pagina zijn gestuurd.
+   - Alles tussen section, div, article en form is gewone HTML-opmaak voor de browser.
+   - De echte styling staat niet hier, maar in het bijbehorende CSS-bestand in wwwroot/css.
+*@
+
+@{
+    ViewData["Title"] = "Producten";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Producten/overzicht.css" asp-append-version="true" />
+}
+@* PAGINA-UITLEG VOOR JUNIOR
+   Use case: UC01 Producten bekijken.
+   Model-relatie: Model.Producten komt uit Overzicht.cshtml.cs en bevat Product-objecten uit de DataAccessLayer.
+   Filter-relatie: Model.Categorieen en Model.Merken vullen de filterzijbalk.
+   Let op: sommige filters zijn alleen voor uitstraling; de categorie en zoekterm werken echt. *@
+
+
+<!-- UC01 Producten bekijken: de klant ziet welke mechanische onderdelen beschikbaar zijn. -->
+<div class="page-title">
+    <div>
+        <span class="badge"><i data-lucide="package-search"></i> Producten</span>
+        <h1>Mechanische onderdelen bekijken</h1>
+        <p class="muted">Vind onderdelen op categorie, merk, prijs en voorraad.</p>
+    </div>
+    <a class="button secondary" asp-page="/Winkelmand/Overzicht"><i data-lucide="shopping-cart"></i> Winkelmand bekijken</a>
+</div>
+
+<section class="product-layout">
+    <!-- Filterpaneel: moderne webshops tonen filters in duidelijke kopjes. -->
+    @* FILTERS
+        Dit zijpaneel helpt de klant logisch zoeken, zoals bij Coolblue/Gamma.
+        Belangrijk: sommige filteropties zijn disabled, dus die zijn alleen visueel.
+        De categorie-links werken wel, omdat ze asp-route-categorie meesturen naar de PageModel. *@
+    <aside class="filters card">
+        <div class="filter-header"><i data-lucide="sliders-horizontal"></i><h2>Filters</h2></div>
+
+        <section class="filter-group">
+            <h3><i data-lucide="grid-3x3"></i> Categorie</h3>
+            <a asp-page="/Producten/Overzicht">Alle producten</a>
+            @* foreach betekent: herhaal dit stukje HTML voor elke categorie in Model.Categorieen.
+               Model.Categorieen komt uit Overzicht.cshtml.cs. *@
+            @foreach (var categorie in Model.Categorieen)
+            {
+                <a asp-page="/Producten/Overzicht" asp-route-categorie="@categorie">@categorie</a>
+            }
+        </section>
+
+        <section class="filter-group">
+            <h3><i data-lucide="badge-euro"></i> Prijs</h3>
+            <label><input type="checkbox" disabled /> Tot €10</label>
+            <label><input type="checkbox" disabled /> €10 tot €25</label>
+            <label><input type="checkbox" disabled /> €25 tot €50</label>
+            <label><input type="checkbox" disabled /> Vanaf €50</label>
+        </section>
+
+        <section class="filter-group">
+            <h3><i data-lucide="factory"></i> Merk</h3>
+            @* Merken worden ook met foreach getoond.
+               Deze checkboxes werken bewust niet; ze geven alleen een realistische webshopuitstraling. *@
+            @foreach (var merk in Model.Merken)
+            {
+                <label><input type="checkbox" disabled /> @merk</label>
+            }
+        </section>
+
+        <section class="filter-group">
+            <h3><i data-lucide="truck"></i> Levering</h3>
+            <label><input type="checkbox" checked disabled /> Op voorraad</label>
+            <label><input type="checkbox" disabled /> Morgen geleverd</label>
+            <label><input type="checkbox" disabled /> Gratis verzending</label>
+        </section>
+    </aside>
+
+    <section class="products-area">
+        <div class="sort-row card">
+            <span><i data-lucide="list-filter"></i> @Model.Producten.Count producten gevonden</span>
+            <span class="muted"><i data-lucide="arrow-up-down"></i> Sorteer op: aanbevolen</span>
+        </div>
+
+        <div class="product-grid">
+            @* PRODUCTKAARTEN
+               Voor elk Product-object uit Model.Producten wordt één productkaart gemaakt.
+               Relatie met DataAccessLayer/Models/Product.cs: de velden Naam, Prijs, Merk, Voorraad enz. komen uit die klasse. *@
+            @foreach (var product in Model.Producten)
+            {
+                <article class="product-card card">
+                    @* Klik op de kaart opent de productdetailpagina.
+                       asp-route-id stuurt het product.Id mee, zodat Detail.cshtml.cs weet welk product geladen moet worden. *@
+                    <a class="product-link" asp-page="/Producten/Detail" asp-route-id="@product.Id">
+                        @* Productafbeelding als Lucide-icoon.
+                           Relatie: Product.Icoon bevat de Lucide-naam, bijvoorbeeld "bolt".
+                           Hierdoor hoeven we geen echte productfoto's te beheren. *@
+                        <div class="product-icon"><i data-lucide="@product.Icoon"></i></div>
+                        <p class="badge"><i data-lucide="tag"></i> @product.Categorie</p>
+                        <h2>@product.Naam</h2>
+                        <p class="muted">@product.Omschrijving</p>
+                    </a>
+
+                    <ul class="product-points">
+                        <li><i data-lucide="factory"></i> Merk: @product.Merk</li>
+                        <li><i data-lucide="check-circle"></i> Voorraad: @product.Voorraad stuks</li>
+                        <li><i data-lucide="truck"></i> @product.Levertijd</li>
+                    </ul>
+
+                    <div class="product-bottom">
+                        <span class="price">€ @product.Prijs.ToString("0.00")</span>
+                        <a class="button secondary" asp-page="/Producten/Detail" asp-route-id="@product.Id"><i data-lucide="eye"></i> Bekijk</a>
+                    </div>
+
+                    @* UC02 Product toevoegen aan winkelmand.
+                       Dit formulier staat direct op de productkaart.
+                       Relatie met Product: product.Id wordt meegestuurd als verborgen waarde.
+                       Relatie met WinkelmandItem: in Overzicht.cshtml.cs wordt dit product omgezet naar een WinkelmandItem.
+                       Relatie met Session: de winkelmand wordt tijdelijk in de sessie opgeslagen. *@
+                    @* DIRECT TOEVOEGEN AAN WINKELMAND
+                       method="post" betekent dat de browser gegevens naar de server stuurt.
+                       asp-page-handler="Toevoegen" zoekt in Overzicht.cshtml.cs naar OnPostToevoegen(...).
+                       Daardoor kan een product direct vanaf de overzichtspagina in de winkelmand. *@
+                    <form method="post" asp-page-handler="Toevoegen" class="quick-add-form">
+                        @* Hidden input is niet zichtbaar voor de gebruiker.
+                           Het stuurt alleen het productId mee naar C#, zodat de juiste Product wordt toegevoegd. *@
+                        <input type="hidden" name="productId" value="@product.Id" />
+
+                        <label class="quantity-label" for="aantal-@product.Id">Aantal</label>
+                        <div class="quick-add-row">
+                            @* name="aantal" zorgt dat de waarde in C# binnenkomt als parameter aantal. *@
+                            <input id="aantal-@product.Id"
+                                   class="quantity-input"
+                                   type="number"
+                                   name="aantal"
+                                   value="1"
+                                   min="1" />
+
+                            <button class="button primary" type="submit">
+                                <i data-lucide="shopping-cart"></i>
+                                In winkelmand
+                            </button>
+                        </div>
+                    </form>
+                </article>
+            }
+        </div>
+    </section>
+</section>

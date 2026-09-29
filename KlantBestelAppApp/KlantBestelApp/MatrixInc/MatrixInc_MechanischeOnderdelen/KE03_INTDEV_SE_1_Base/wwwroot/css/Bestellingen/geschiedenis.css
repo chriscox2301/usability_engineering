@@ -1,0 +1,179 @@
+/* CSS voor Bestellingen/Geschiedenis.cshtml. Relatie: orderhistorie netjes tonen. */
+.page-title h1 { margin: .5rem 0; font-size: 2.3rem; }
+.empty-history { padding: 3rem; text-align: center; display: grid; place-items: center; gap: .8rem; }
+.empty-history svg { width: 60px; height: 60px; color: var(--blue); }
+.history-list { display: grid; gap: 1rem; }
+.history-card { padding: 0; overflow: hidden; position: relative; }
+.history-card summary { list-style: none; }
+.history-card summary::-webkit-details-marker { display: none; }
+.history-summary { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.2rem 3.2rem 2.4rem 1.2rem; cursor: pointer; position: relative; }
+.summary-main { min-width: 0; }
+.summary-side { display: inline-flex; align-items: center; gap: .8rem; flex-shrink: 0; }
+.history-summary h2 { margin: 0 0 .2rem; }
+.summary-product { margin: .7rem 0 0; color: var(--text); }
+.chevron { color: var(--blue); transition: transform .2s ease; flex-shrink: 0; position: absolute; right: 1.2rem; bottom: 1rem; }
+.history-card[open] .chevron { transform: rotate(180deg); }
+.history-details { border-top: 1px solid var(--line); padding: 1rem 1.2rem 1.2rem; }
+.status {background: #FEF3C7; color: #92400E; border-radius: 999px; padding: .35rem .7rem; font-weight: 800; white-space: nowrap; }
+.status.onderweg { background: #dbeafe; color: #1d4ed8; }
+.status.bezorgd { background: #dcfce7; color: #166534; }
+.history-lines { display: grid; gap: .5rem; padding: .9rem 0; border-top: 1px solid var(--line); }
+.history-lines div, .history-total, .history-detail-row { display: flex; justify-content: space-between; gap: 1rem; }
+.history-detail-row { align-items: center; padding: .75rem 0; }
+.history-detail-row p { margin: 0; color: var(--muted); text-align: right; }
+.history-total { border-top: 1px solid var(--line); padding-top: .9rem; font-size: 1.15rem; }
+.history-customer { display: flex; flex-wrap: wrap; gap: .7rem; padding: .75rem 0; color: var(--muted); }
+.history-customer span { display: inline-flex; align-items: center; gap: .35rem; }
+.history-customer svg { width: 17px; height: 17px; color: var(--blue); }
+
+@media (max-width: 700px) {
+    .history-summary, .history-detail-row, .history-lines div, .history-total { align-items: flex-start; }
+    .summary-side { align-items: flex-end; flex-direction: column; gap: .5rem; }
+    .history-detail-row { flex-direction: column; }
+    .history-detail-row p { text-align: left; }
+}
+
+/* Extra feedback docent: order is duidelijk klikbaar en heeft acties. */
+.click-hint { display: inline-flex; align-items: center; gap: .35rem; margin-top: .55rem; color: var(--blue); font-weight: 800; font-size: .9rem; }
+.click-hint svg { width: 16px; height: 16px; }
+.action-alert { padding: .9rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .55rem; background: #eff6ff; color: var(--blue-dark); font-weight: 800; }
+
+.delivery-message svg { width: 22px; height: 22px; color: var(--blue); flex: 0 0 auto; }
+.delivery-message p { margin: .25rem 0 0; color: var(--muted); }
+.order-actions { display: flex; flex-wrap: wrap; gap: .7rem; border-top: 1px solid var(--line); padding-top: .9rem; margin-top: .9rem; }
+.order-actions form { margin: 0; }
+.status.annulering-aangevraagd, .status.geannuleerd { background: #fee2e2; color: #991b1b; }
+
+
+/* Horizontale voortgangsbalk voor pakketbezorging in de orderhistorie.
+   Deze styling is bewust gelijkwaardig aan de back-office, zodat klantapp en admin logisch samenlopen. */
+.customer-delivery-progress-card {
+    margin: .9rem 0 1rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #f8fafc;
+}
+
+.customer-delivery-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: .85rem;
+}
+
+.progress-eyebrow {
+    display: inline-block;
+    margin-bottom: .2rem;
+    font-size: .78rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--blue);
+}
+
+.customer-delivery-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.customer-delivery-header p {
+    margin: .3rem 0 0;
+    color: var(--muted);
+}
+
+.customer-progress-track {
+    position: relative;
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e2e8f0;
+}
+
+.customer-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #2563eb, #16a34a);
+}
+
+.customer-progress-steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: .35rem;
+    margin-top: .65rem;
+    font-size: .82rem;
+    font-weight: 800;
+    color: var(--muted);
+    text-align: center;
+}
+
+.customer-progress-steps span:first-child { text-align: left; }
+.customer-progress-steps span:last-child { text-align: right; }
+
+.status.verzonden { background: #e0f2fe; color: #0369a1; }
+.status.in-gepakt, .status.ingepakt { background: #dcfce7; color: #166534; }
+.status.in-behandeling, .status.verwerkt { background: #fef3c7; color: #92400e; }
+.status.nieuw, .status.geplaatst { background: #e0e7ff; color: #3730a3; }
+.status.klacht-gemeld { background: #fee2e2; color: #991b1b; }
+
+@media (max-width: 700px) {
+    .customer-delivery-header { flex-direction: column; }
+    .customer-progress-steps { font-size: .72rem; }
+}
+
+/* Track & trace staat als eigen informatieblok onder de pakketvoortgang. */
+.track-trace-message {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    margin: .9rem 0 1rem;
+    padding: 1rem;
+    border: 1px solid #bfdbfe;
+    border-radius: 18px;
+    background: #eff6ff;
+    color: #1e3a8a;
+}
+
+.track-trace-message strong {
+    display: block;
+    margin-bottom: .15rem;
+    color: #1e40af;
+    font-size: 1rem;
+}
+
+.track-trace-message p {
+    margin: 0;
+    color: #475569;
+    line-height: 1.45;
+}
+
+.track-trace-message svg {
+    width: 24px;
+    height: 24px;
+    color: #2563eb;
+    flex: 0 0 auto;
+    margin-top: .1rem;
+}
+
+/* Bij geannuleerde bestellingen tonen we geen pakketvoortgang meer. */
+.cancelled-order-message {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    margin: .9rem 0 1rem;
+    padding: 1rem;
+    border: 1px solid #fecaca;
+    border-radius: 18px;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.cancelled-order-message svg {
+    color: #991b1b;
+}
+
+.cancelled-order-message strong {
+    display: block;
+    margin-bottom: .15rem;
+}
