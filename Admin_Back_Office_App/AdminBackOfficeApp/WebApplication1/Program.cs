@@ -22,6 +22,10 @@ namespace WebApplication1
             // Builder bevat configuratie uit appsettings.json, environment settings en geregistreerde services.
             var builder = WebApplication.CreateBuilder(args);
 
+            // appsettings.Local.json staat niet in git. Daarin zet elke developer zijn eigen SQL Server-naam.
+            // Dit bestand wordt als laatste geladen, dus het overschrijft appsettings.json.
+            builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
             // Registreert MVC. Zonder deze regel werken controllers zoals DashboardController niet.
             builder.Services.AddControllersWithViews();
 

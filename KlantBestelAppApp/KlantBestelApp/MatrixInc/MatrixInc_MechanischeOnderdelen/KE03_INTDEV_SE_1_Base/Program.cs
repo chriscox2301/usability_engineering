@@ -10,6 +10,9 @@ namespace KE03_INTDEV_SE_1_Base
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // appsettings.Local.json staat niet in git: eigen SQL Server-naam per developer.
+            builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
+
             // Zelfde database-aanpak als de MVC back-office applicatie:
             // DatabaseConnection leest ConnectionStrings:DefaultConnection uit appsettings.json
             // en repositories gebruiken ADO.NET met Microsoft.Data.SqlClient.

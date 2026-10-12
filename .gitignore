@@ -426,3 +426,5 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+# Lokale instellingen per developer (bv. eigen SQL Server-naam)
+appsettings.Local.json
