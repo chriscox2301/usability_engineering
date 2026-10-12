@@ -133,14 +133,19 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Toevoegen(Product product)
         {
-            // Server-side validatie: deze velden moeten minimaal gevuld zijn.
-            if (string.IsNullOrWhiteSpace(product.Naam) || string.IsNullOrWhiteSpace(product.Artikelnummer))
+            // Artikelnummer is UNIQUE in SQL Server. We controleren dat vooraf, anders crasht de INSERT.
+            // De key "Artikelnummer" koppelt de fout aan dat veld, zodat de View het juiste vlak rood maakt.
+            if (!string.IsNullOrWhiteSpace(product.Artikelnummer) &&
+                _productRepository.GetAlleProducten().Any(p => p.Artikelnummer.Equals(product.Artikelnummer.Trim(), StringComparison.OrdinalIgnoreCase)))
+            {
+                ModelState.AddModelError(nameof(Product.Artikelnummer), "Dit artikelnummer bestaat al.");
+            }
+
+            // ModelState.IsValid is false als een regel uit Product.cs ([Required], [Range], ...) niet klopt.
+            if (!ModelState.IsValid)
             {
                 // Dropdownlijsten opnieuw vullen, anders zijn ze leeg wanneer de View opnieuw getoond wordt.
                 VulProductFormulierKeuzes();
-
-                // Foutmelding toevoegen aan ModelState. De View toont dit via asp-validation-summary.
-                ModelState.AddModelError(string.Empty, "Naam en artikelnummer zijn verplicht.");
                 return View(product);
             }
 

@@ -31,9 +31,9 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="form-grid">
-        <div><label asp-for="Naam"></label><input asp-for="Naam" class="form-control" /></div>
-        <div><label asp-for="Artikelnummer"></label><input asp-for="Artikelnummer" class="form-control" /></div>
-        <div><label asp-for="Merk"></label><input asp-for="Merk" class="form-control" /></div>
+        <div><label asp-for="Naam"></label><input asp-for="Naam" class="form-control" /><span asp-validation-for="Naam" class="text-danger small"></span></div>
+        <div><label asp-for="Artikelnummer"></label><input asp-for="Artikelnummer" class="form-control" /><span asp-validation-for="Artikelnummer" class="text-danger small"></span></div>
+        <div><label asp-for="Merk"></label><input asp-for="Merk" class="form-control" /><span asp-validation-for="Merk" class="text-danger small"></span></div>
 
         <div>
             <label asp-for="Categorie"></label>
@@ -45,10 +45,11 @@
                     <option value="@categorie">@categorie</option>
                 }
             </select>
+            <span asp-validation-for="Categorie" class="text-danger small"></span>
         </div>
 
-        <div><label asp-for="Prijs"></label><input asp-for="Prijs" class="form-control" /></div>
-        <div><label asp-for="Voorraad"></label><input asp-for="Voorraad" class="form-control" /></div>
+        <div><label asp-for="Prijs"></label><input asp-for="Prijs" class="form-control" /><span asp-validation-for="Prijs" class="text-danger small"></span></div>
+        <div><label asp-for="Voorraad"></label><input asp-for="Voorraad" class="form-control" /><span asp-validation-for="Voorraad" class="text-danger small"></span></div>
 
         <div>
             <label asp-for="Status"></label>
@@ -84,7 +85,7 @@
             </select>
         </div>
 
-        <div class="full"><label asp-for="Omschrijving"></label><textarea asp-for="Omschrijving" class="form-control" rows="4"></textarea></div>
+        <div class="full"><label asp-for="Omschrijving"></label><textarea asp-for="Omschrijving" class="form-control" rows="4"></textarea><span asp-validation-for="Omschrijving" class="text-danger small"></span></div>
     </div>
 
     <div class="button-row"><button class="btn btn-primary" type="submit">Opslaan</button><a class="btn btn-light" asp-action="Index">Annuleren</a></div>
