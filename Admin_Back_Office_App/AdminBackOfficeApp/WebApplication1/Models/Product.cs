@@ -40,7 +40,7 @@ namespace WebApplication1.Models
         public string Categorie { get; set; } = string.Empty;
 
         // Verkoopprijs of interne productprijs. Decimal wordt gebruikt voor geldbedragen.
-        [Range(typeof(decimal), "0.01", "99999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "Prijs moet groter zijn dan 0.")]
+        [Range(typeof(decimal), "0.01", "99999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "Prijs moet tussen € 0,01 en € 99.999.999,99 liggen.")]
         public decimal Prijs { get; set; }
 
         // Aantal stuks dat op voorraad is.

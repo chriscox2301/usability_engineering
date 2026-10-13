@@ -60,6 +60,11 @@
                     <option value="@status">@status</option>
                 }
             </select>
+            <span asp-validation-for="Status" class="text-danger small"></span>
+            <div id="concept-waarschuwing"
+                class="alert alert-warning small py-2 px-3 mt-2 mb-0 @(Model?.IsConcept() == true ? "" : "d-none")" role="status">
+                <strong>Let op:</strong> dit product staat op <em>Concept</em> en verschijnt niet op de klantpagina.
+            </div>
         </div>
 
         <div>
@@ -90,3 +95,23 @@
 
     <div class="button-row"><button class="btn btn-primary" type="submit">Opslaan</button><a class="btn btn-light" asp-action="Index">Annuleren</a></div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function() {
+			const statusSelect = document.getElementById("Status");
+			const waarschuwing = document.getElementById("concept-waarschuwing");
+            if (!statusSelect || !waarschuwing) return;
+            
+            function werkWaarschuwingBij() {
+				const isConcept = statusSelect.value.toLowerCase() === "concept";
+
+                waarschuwing.style.display = isConcept ? "" : "none";
+            }
+
+            statusSelect.addEventListener("change", werkWaarschuwingBij);
+            werkWaarschuwingBij();
+        })();
+    </script>
+}

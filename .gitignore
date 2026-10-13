@@ -428,3 +428,5 @@ FodyWeavers.xsd
 #*.lscache
 # Lokale instellingen per developer (bv. eigen SQL Server-naam)
 appsettings.Local.json
+KlantBestelAppApp/KlantBestelApp/MatrixInc/MatrixInc_MechanischeOnderdelen/KE03_INTDEV_SE_1_Base/appsettings.json
+Admin_Back_Office_App/AdminBackOfficeApp/WebApplication1/appsettings.json
