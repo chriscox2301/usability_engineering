@@ -7,6 +7,18 @@
     var leveranciers = ViewBag.Leveranciers as List<string> ?? new List<string>();
     var statussen = ViewBag.Statussen as List<string> ?? new List<string>();
     var iconen = ViewBag.Iconen as List<string> ?? new List<string>();
+
+    // Nederlandse namen voor de Lucide-iconen in de keuzelijst.
+    var icoonNamen = new Dictionary<string, string>
+    {
+        ["package"] = "Pakket",
+        ["circle-dot"] = "Cirkel met punt",
+        ["cog"] = "Tandwiel",
+        ["bolt"] = "Bout",
+        ["wrench"] = "Moersleutel",
+        ["rotate-cw"] = "Draaipijl",
+        ["gauge"] = "Meter"
+    };
 }
 @section Styles { <link rel="stylesheet" href="~/css/producten/toevoegen.css" asp-append-version="true" /> }
 
@@ -48,8 +60,10 @@
             <span asp-validation-for="Categorie" class="text-danger small"></span>
         </div>
 
-        <div><label asp-for="Prijs"></label><input asp-for="Prijs" class="form-control" /><span asp-validation-for="Prijs" class="text-danger small"></span></div>
-        <div><label asp-for="Voorraad"></label><input asp-for="Voorraad" class="form-control" /><span asp-validation-for="Voorraad" class="text-danger small"></span></div>
+        @* type="text" zodat zowel 12,50 als 12.50 ingevuld kan worden. toevoegen.js zet de prijs om naar het juiste formaat. *@
+        <div><label asp-for="Prijs"></label><input asp-for="Prijs" type="text" inputmode="decimal" placeholder="Bijv. 12,50" class="form-control" /><span asp-validation-for="Prijs" class="text-danger small"></span></div>
+        @* type="text" voorkomt Engelse browsermeldingen; toevoegen.js controleert direct tijdens het typen of het een heel getal is. *@
+        <div><label asp-for="Voorraad"></label><input asp-for="Voorraad" type="text" inputmode="numeric" class="form-control" /><span asp-validation-for="Voorraad" class="text-danger small"></span></div>
 
         <div>
             <label asp-for="Status"></label>
@@ -85,7 +99,8 @@
             <select asp-for="Icoon" class="form-select">
                 @foreach (var icoon in iconen)
                 {
-                    <option value="@icoon">@icoon</option>
+                    @* De value blijft de Lucide-naam (Engels), de gebruiker ziet een Nederlandse omschrijving. *@
+                    <option value="@icoon">@(icoonNamen.TryGetValue(icoon, out var icoonNaam) ? icoonNaam : icoon)</option>
                 }
             </select>
         </div>
@@ -96,18 +111,22 @@
     <div class="button-row"><button class="btn btn-primary" type="submit">Opslaan</button><a class="btn btn-light" asp-action="Index">Annuleren</a></div>
 </form>
 
+@* Er mag maar één @section Scripts per View zijn, anders geeft Razor de fout "Section 'Scripts' is already defined". *@
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    @* toevoegen.js controleert Prijs, Voorraad en Artikelnummer live.
+       _ValidationScriptsPartial (jQuery Validate) laden we hier bewust niet: die keurt een prijs met komma (12,50) af. *@
+    <script src="~/js/producten/toevoegen.js" asp-append-version="true"></script>
     <script>
         (function() {
-			const statusSelect = document.getElementById("Status");
-			const waarschuwing = document.getElementById("concept-waarschuwing");
+            const statusSelect = document.getElementById("Status");
+            const waarschuwing = document.getElementById("concept-waarschuwing");
             if (!statusSelect || !waarschuwing) return;
-            
-            function werkWaarschuwingBij() {
-				const isConcept = statusSelect.value.toLowerCase() === "concept";
 
-                waarschuwing.style.display = isConcept ? "" : "none";
+            function werkWaarschuwingBij() {
+                const isConcept = statusSelect.value.toLowerCase() === "concept";
+
+                // d-none (Bootstrap) gebruikt !important, dus style.display alleen is niet genoeg. We wisselen de class.
+                waarschuwing.classList.toggle("d-none", !isConcept);
             }
 
             statusSelect.addEventListener("change", werkWaarschuwingBij);

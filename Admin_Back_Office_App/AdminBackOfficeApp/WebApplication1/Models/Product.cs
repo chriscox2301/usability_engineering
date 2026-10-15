@@ -28,6 +28,7 @@ namespace WebApplication1.Models
         // Uniek artikelnummer. Dit wordt gebruikt om producten snel te herkennen.
         [Required(ErrorMessage = "Vul een artikelnummer in.")]
         [StringLength(50, ErrorMessage = "Artikelnummer mag maximaal 50 tekens zijn.")]
+        [RegularExpression(@"^.*\d.*$", ErrorMessage = "Artikelnummer moet minimaal 1 cijfer bevatten.")]
         public string Artikelnummer { get; set; } = string.Empty;
 
         // Merknaam van het product.
