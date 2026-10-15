@@ -119,7 +119,8 @@ namespace WebApplication1.Controllers
         public IActionResult Toevoegen()
         {
             // Vult ViewBag.Statussen, ViewBag.Categorieen, ViewBag.Leveranciers en ViewBag.Iconen voor dropdowns.
-            VulProductFormulierKeuzes();
+            // Een nieuw product mag alleen als Concept of Actief beginnen.
+            VulProductFormulierKeuzes(Product.StartStatussen);
 
             // Nieuw Product-object met standaardwaarden. De View gebruikt dit als formuliermodel.
             return View(new Product { Status = "Concept", Icoon = "package", LaatstGewijzigd = "Nog niet opgeslagen" });
@@ -141,11 +142,17 @@ namespace WebApplication1.Controllers
                 ModelState.AddModelError(nameof(Product.Artikelnummer), "Dit artikelnummer bestaat al.");
             }
 
+            // De keuzelijst toont alleen Concept en Actief, maar een formulier kan ook handmatig aangepast worden.
+            if (!Product.StartStatussen.Contains(product.Status))
+            {
+                ModelState.AddModelError(nameof(Product.Status), "Een nieuw product kan alleen de status Concept of Actief krijgen.");
+            }
+
             // ModelState.IsValid is false als een regel uit Product.cs ([Required], [Range], ...) niet klopt.
             if (!ModelState.IsValid)
             {
                 // Dropdownlijsten opnieuw vullen, anders zijn ze leeg wanneer de View opnieuw getoond wordt.
-                VulProductFormulierKeuzes();
+                VulProductFormulierKeuzes(Product.StartStatussen);
                 return View(product);
             }
 
@@ -172,7 +179,8 @@ namespace WebApplication1.Controllers
             }
 
             // Keuzelijsten vullen voordat Views/Producten/Wijzigen.cshtml gerenderd wordt.
-            VulProductFormulierKeuzes();
+            // De statuslijst bevat alleen de statussen waar dit product naartoe mag.
+            VulProductFormulierKeuzes(product.ToegestaneStatussen());
             return View(product);
         }
 
@@ -184,10 +192,32 @@ namespace WebApplication1.Controllers
         [HttpPost]
         public IActionResult Wijzigen(Product product)
         {
+            // We halen de huidige versie uit de database op, want alleen die vertelt wat de status nú is.
+            var bestaandProduct = _productRepository.GetProductById(product.Id);
+            if (bestaandProduct == null)
+            {
+                TempData["Melding"] = "Product niet gevonden.";
+                return RedirectToAction("Index");
+            }
+
+            // Wijzigen.cshtml toont alleen algemene fouten (ModelOnly), daarom gebruiken we hier string.Empty als key.
+            var heeftFout = false;
             if (string.IsNullOrWhiteSpace(product.Naam) || string.IsNullOrWhiteSpace(product.Artikelnummer))
             {
-                VulProductFormulierKeuzes();
                 ModelState.AddModelError(string.Empty, "Naam en artikelnummer zijn verplicht.");
+                heeftFout = true;
+            }
+
+            // Controleert de statusregels uit Product.cs, bijvoorbeeld: Actief mag niet terug naar Concept.
+            if (!bestaandProduct.MagNaarStatus(product.Status))
+            {
+                ModelState.AddModelError(string.Empty, $"Een product met status {bestaandProduct.Status} kan niet naar {product.Status}.");
+                heeftFout = true;
+            }
+
+            if (heeftFout)
+            {
+                VulProductFormulierKeuzes(bestaandProduct.ToegestaneStatussen());
                 return View(product);
             }
 
@@ -211,20 +241,50 @@ namespace WebApplication1.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Koppelt aan Views/Producten/Verwijderen.cshtml.
+            // Een inactief product kan niet verder verwijderd worden. Het kan alleen weer op Actief gezet worden.
+            if (product.Status == "Inactief")
+            {
+                TempData["Melding"] = "Dit product is al inactief. Via Wijzigen kun je het weer op Actief zetten.";
+                return RedirectToAction("Index");
+            }
+
+            // Koppelt aan Views/Producten/Verwijderen.cshtml. De View past de tekst aan op de status.
             return View(product);
         }
 
         /*
             POST /Producten/VerwijderenBevestigd
-            Deactiveert een product in plaats van fysiek verwijderen.
-            Daardoor blijven historische bestellingen veilig gekoppeld aan bestaande product-id's.
+            - Concept: wordt definitief verwijderd. Een Concept is nooit besteld geweest.
+            - Actief: wordt op Inactief gezet in plaats van fysiek verwijderd.
+              Daardoor blijven historische bestellingen veilig gekoppeld aan bestaande product-id's.
+            - Inactief: niets doen, dat is al de eindstatus van Verwijderen.
         */
         [HttpPost]
         public IActionResult VerwijderenBevestigd(int id)
         {
-            _productRepository.DeactiveerProduct(id);
-            TempData["Melding"] = "Product is in SQL Server op Inactief gezet. Het product is niet fysiek verwijderd.";
+            var product = _productRepository.GetProductById(id);
+            if (product == null)
+            {
+                TempData["Melding"] = "Product niet gevonden.";
+                return RedirectToAction("Index");
+            }
+
+            if (product.KanDefinitiefVerwijderdWorden())
+            {
+                TempData["Melding"] = _productRepository.VerwijderConceptProduct(id)
+                    ? "Conceptproduct is definitief verwijderd."
+                    : "Dit conceptproduct kan niet verwijderd worden, omdat er bestelregels aan gekoppeld zijn.";
+            }
+            else if (product.Status == "Actief")
+            {
+                _productRepository.DeactiveerProduct(id);
+                TempData["Melding"] = "Product is in SQL Server op Inactief gezet. Het product is niet fysiek verwijderd.";
+            }
+            else
+            {
+                TempData["Melding"] = "Dit product is al inactief.";
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -233,10 +293,11 @@ namespace WebApplication1.Controllers
             Deze methode hoort alleen bij deze controller en kan niet via een URL worden aangeroepen.
             De methode voorkomt dubbele code in Toevoegen() en Wijzigen().
         */
-        private void VulProductFormulierKeuzes()
+        private void VulProductFormulierKeuzes(List<string> statussen)
         {
             // Deze lijsten worden in de Views gebruikt door foreach-loops om <option>-tags te maken.
-            ViewBag.Statussen = new List<string> { "Actief", "Concept", "Inactief" };
+            // statussen komt uit Product.StartStatussen (Toevoegen) of product.ToegestaneStatussen() (Wijzigen).
+            ViewBag.Statussen = statussen;
             ViewBag.Categorieen = _productRepository.GetCategorieNamen();
             ViewBag.Leveranciers = _productRepository.GetLeverancierNamen();
             ViewBag.Iconen = new List<string> { "package", "circle-dot", "cog", "bolt", "wrench", "rotate-cw", "gauge" };

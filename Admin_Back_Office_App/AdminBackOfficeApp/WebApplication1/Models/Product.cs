@@ -28,6 +28,7 @@ namespace WebApplication1.Models
         // Uniek artikelnummer. Dit wordt gebruikt om producten snel te herkennen.
         [Required(ErrorMessage = "Vul een artikelnummer in.")]
         [StringLength(50, ErrorMessage = "Artikelnummer mag maximaal 50 tekens zijn.")]
+        [RegularExpression(@"^.*\d.*$", ErrorMessage = "Artikelnummer moet minimaal 1 cijfer bevatten.")]
         public string Artikelnummer { get; set; } = string.Empty;
 
         // Merknaam van het product.
@@ -69,6 +70,39 @@ namespace WebApplication1.Models
         public bool IsConcept()
         {
             return Status.Equals("Concept", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /*
+            Statusregels (state transition):
+            - Een nieuw product begint als Concept of Actief.
+            - Concept -> Actief is toegestaan. Een Concept kan ook definitief verwijderd worden.
+            - Actief <-> Inactief is toegestaan.
+            - Actief of Inactief kan niet meer terug naar Concept.
+        */
+        public static readonly List<string> StartStatussen = new() { "Concept", "Actief" };
+
+        // Geeft de statussen terug die vanuit de huidige status gekozen mogen worden (inclusief de huidige zelf).
+        public List<string> ToegestaneStatussen()
+        {
+            return Status switch
+            {
+                "Concept" => new List<string> { "Concept", "Actief" },
+                "Actief" => new List<string> { "Actief", "Inactief" },
+                "Inactief" => new List<string> { "Inactief", "Actief" },
+                _ => new List<string> { Status }
+            };
+        }
+
+        // Business helper: true als de overgang van de huidige status naar nieuweStatus is toegestaan.
+        public bool MagNaarStatus(string nieuweStatus)
+        {
+            return ToegestaneStatussen().Contains(nieuweStatus);
+        }
+
+        // Alleen een Concept mag echt uit de database verwijderd worden. Het is nooit besteld geweest.
+        public bool KanDefinitiefVerwijderdWorden()
+        {
+            return IsConcept();
         }
 
         // Business helper: controleert of belangrijke velden ontbreken of ongeldig zijn.

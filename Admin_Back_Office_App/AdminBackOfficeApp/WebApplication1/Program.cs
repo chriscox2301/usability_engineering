@@ -1,4 +1,5 @@
 using WebApplication1.Data;
+using WebApplication1.Infrastructure;
 
 namespace WebApplication1
 {
@@ -27,7 +28,26 @@ namespace WebApplication1
             builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true);
 
             // Registreert MVC. Zonder deze regel werken controllers zoals DashboardController niet.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                // Eigen binder voor decimal: accepteert zowel een komma als een punt (12,50 of 12.50).
+                // Insert(0, ...) zorgt dat deze binder vóór de standaard binder van ASP.NET Core komt.
+                options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+
+                // Standaard foutmeldingen van model binding zijn Engels. Hier vervangen we ze door Nederlandse teksten.
+                var berichten = options.ModelBindingMessageProvider;
+                berichten.SetAttemptedValueIsInvalidAccessor((waarde, veld) => $"'{waarde}' is geen geldige waarde voor {veld}.");
+                berichten.SetMissingBindRequiredValueAccessor(veld => $"Er is geen waarde opgegeven voor {veld}.");
+                berichten.SetMissingKeyOrValueAccessor(() => "Er is een waarde verplicht.");
+                berichten.SetMissingRequestBodyRequiredValueAccessor(() => "Er is een niet-lege request body verplicht.");
+                berichten.SetNonPropertyAttemptedValueIsInvalidAccessor(waarde => $"'{waarde}' is geen geldige waarde.");
+                berichten.SetNonPropertyUnknownValueIsInvalidAccessor(() => "De opgegeven waarde is ongeldig.");
+                berichten.SetNonPropertyValueMustBeANumberAccessor(() => "Dit veld moet een getal zijn.");
+                berichten.SetUnknownValueIsInvalidAccessor(veld => $"De opgegeven waarde is ongeldig voor {veld}.");
+                berichten.SetValueIsInvalidAccessor(waarde => $"'{waarde}' is geen geldige waarde.");
+                berichten.SetValueMustBeANumberAccessor(veld => $"{veld} moet een getal zijn.");
+                berichten.SetValueMustNotBeNullAccessor(_ => "Dit veld is verplicht.");
+            });
 
             // DatabaseConnection leest de connection string en maakt SqlConnection-objecten.
             builder.Services.AddScoped<DatabaseConnection>();

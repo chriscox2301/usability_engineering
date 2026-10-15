@@ -115,6 +115,23 @@ namespace WebApplication1.Data
             command.ExecuteNonQuery();
         }
 
+        // Verwijdert een Concept-product definitief uit SQL Server.
+        // De WHERE-voorwaarden zorgen dat alleen een Concept zonder bestelregels verwijderd wordt.
+        // Geeft true terug als er echt een rij verwijderd is.
+        public bool VerwijderConceptProduct(int id)
+        {
+            using var connection = _databaseConnection.MaakVerbinding();
+            using var command = new SqlCommand(@"
+                DELETE FROM Producten
+                WHERE Id = @Id
+                  AND Status = 'Concept'
+                  AND NOT EXISTS (SELECT 1 FROM Bestelregels WHERE ProductId = @Id);", connection);
+            command.Parameters.AddWithValue("@Id", id);
+
+            connection.Open();
+            return command.ExecuteNonQuery() > 0;
+        }
+
         // Past alleen de voorraad van één product aan.
         public void PasVoorraadAan(int id, int voorraad)
         {
