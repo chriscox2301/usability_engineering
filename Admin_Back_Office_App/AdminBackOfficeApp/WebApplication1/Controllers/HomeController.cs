@@ -15,7 +15,8 @@ namespace WebApplication1.Controllers
         {
             return View(new ErrorViewModel
             {
-                // Activity.Current?.Id is beschikbaar wanneer tracing actief is.
+                // Activity.Current?.Id is beschikbaar wanneer tracing
+                // is.
                 // HttpContext.TraceIdentifier is de fallback request-id van ASP.NET Core.
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
             });

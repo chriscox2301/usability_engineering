@@ -92,7 +92,11 @@
                 <td class="action-links">
                     <a asp-controller="Producten" asp-action="Details" asp-route-id="@product.Id">Details</a>
                     <a asp-controller="Producten" asp-action="Wijzigen" asp-route-id="@product.Id">Wijzigen</a>
-                    <a asp-controller="Producten" asp-action="Verwijderen" asp-route-id="@product.Id">Verwijderen</a>
+                    @* Een inactief product kan niet verwijderd worden, alleen via Wijzigen weer op Actief gezet. *@
+                    @if (product.Status != "Inactief")
+                    {
+                        <a asp-controller="Producten" asp-action="Verwijderen" asp-route-id="@product.Id">Verwijderen</a>
+                    }
                 </td>
             </tr>
         }

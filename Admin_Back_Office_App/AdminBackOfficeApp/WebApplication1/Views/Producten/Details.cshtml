@@ -24,6 +24,6 @@
         <dl class="definition-list">
             <dt>Merk</dt><dd>@Model.Merk</dd><dt>Categorie</dt><dd>@Model.Categorie</dd><dt>Prijs</dt><dd>€ @Model.Prijs</dd><dt>Voorraad</dt><dd>@Model.Voorraad stuks</dd><dt>Status</dt><dd>@Model.Status</dd><dt>Leverancier</dt><dd>@Model.Leverancier</dd><dt>Laatst gewijzigd</dt><dd>@Model.LaatstGewijzigd</dd>
         </dl>
-        <div class="button-row"><a class="btn btn-primary" asp-action="Wijzigen" asp-route-id="@Model.Id">Wijzigen</a><a class="btn btn-outline-danger" asp-action="Verwijderen" asp-route-id="@Model.Id">Verwijderen</a></div>
+        <div class="button-row"><a class="btn btn-primary" asp-action="Wijzigen" asp-route-id="@Model.Id">Wijzigen</a>@if (Model.Status != "Inactief") { <a class="btn btn-outline-danger" asp-action="Verwijderen" asp-route-id="@Model.Id">Verwijderen</a> }</div>
     </article>
 </section>
