@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using WebApplication1.Models;
 
-namespace TestProject
+namespace WebApplication1
 {
     /*
         Unit tests voor het aanmaken van een product.
@@ -17,9 +17,9 @@ namespace TestProject
     */
     public class ProductAanmakenTests
     {
-        // TC01 - Product aanmaken - Geldige productnaam en prijs - Product wordt aangemaakt
+        // Product aanmaken - Geldige productnaam en prijs - Product wordt aangemaakt
         [Fact]
-        public void TC01_ProductAanmaken_GeldigeNaamEnPrijs_ProductWordtAangemaakt()
+        public void ProductAanmaken_GeldigeNaamEnPrijs_ProductWordtAangemaakt()
         {
             // Arrange: een product met een geldige naam en een geldige prijs.
             var product = new Product
@@ -44,9 +44,9 @@ namespace TestProject
             Assert.Empty(fouten);
         }
 
-        // TC02 - Product aanmaken - Negatieve prijs - Validatiefout
+        // Product aanmaken - Negatieve prijs - Validatiefout
         [Fact]
-        public void TC02_ProductAanmaken_NegatievePrijs_Validatiefout()
+        public void ProductAanmaken_NegatievePrijs_Validatiefout()
         {
             // Arrange: een product dat verder geldig is, maar een negatieve prijs heeft.
             var product = new Product

@@ -2,7 +2,7 @@
 using WebApplication1.Models;
 using Xunit;
 
-namespace TestProject
+namespace WebApplication1
 {
     public class ProductvalidatieTests
     {
