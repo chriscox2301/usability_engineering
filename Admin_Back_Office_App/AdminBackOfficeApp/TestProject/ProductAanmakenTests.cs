@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using WebApplication1.Models;
 
-namespace TestProject
+namespace WebApplication1
 {
     /*
         Unit tests voor het aanmaken van een product.
