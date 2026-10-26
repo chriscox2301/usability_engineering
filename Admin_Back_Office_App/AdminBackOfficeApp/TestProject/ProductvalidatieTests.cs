@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WebApplication1.Models;
+using WebApplication1.Infrastructure;
 using Xunit;
 
 namespace TestProject
@@ -87,6 +88,39 @@ namespace TestProject
             Assert.False(IsValid(product));
         }
 
-        // --------------------------------------------------------------------------------------
-    }
+		// Unit tests Milan --------------------------------------------------------------------------------------
+
+		//TC06 Checken of de prijs correct wordt verwerkt als er letters in staan.
+		[Fact]
+		public void LettersInPrijs_GeeftValidatiefout()
+		{
+			// Arrange
+			string invoer = "abc";
+
+			// Act
+			bool resultaat =
+				DecimalModelBinder.TryParseBedrag(invoer, out decimal prijs);
+
+			// Assert
+			Assert.False(resultaat);
+		}
+
+		//TC07 Checken of de prijs correct wordt verwerkt als er een euroteken en spatie voor staat.
+		[Fact]
+		public void EurotekenEnSpatieInPrijs_WordtCorrectVerwerkt()
+		{
+			// Arrange
+			string invoer = "€ 12,50";
+
+			// Act
+			bool resultaat =
+				DecimalModelBinder.TryParseBedrag(invoer, out decimal prijs);
+
+			// Assert
+			Assert.True(resultaat);
+			Assert.Equal(12.50m, prijs);
+		}
+
+
+	}
 }
