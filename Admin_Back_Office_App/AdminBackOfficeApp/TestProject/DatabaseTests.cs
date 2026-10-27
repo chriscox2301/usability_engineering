@@ -1,91 +1,89 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Data;
+﻿using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using WebApplication1.Data;
-using WebApplication1.Models;
 
 namespace WebApplication1
 {
     /*
-        Unit tests voor het aanmaken van een product.
+        Integratietests voor de databaseverbinding.
 
-        Deze tests controleren de validatieregels in Product.cs ([Required], [Range], ...).
-        Dat zijn dezelfde regels die ProductenController.Toevoegen via ModelState.IsValid gebruikt:
-        is het model geldig, dan wordt het product aangemaakt; anders krijgt de gebruiker een validatiefout.
+        Deze tests praten met de echte database uit appsettings.json (LocalDB).
+        Ze slagen dus alleen als die database bereikbaar is.
 
         Elke test volgt het Arrange-Act-Assert patroon:
-        - Arrange: de testdata klaarzetten.
+        - Arrange: alles klaarzetten wat de test nodig heeft.
         - Act:     de handeling uitvoeren die we testen.
         - Assert:  controleren of de uitkomst klopt.
     */
     public class DatabaseTests
     {
-        // Integratietest: controleert of de applicatie echt verbinding kan maken met de database.
-        // Let op: deze test slaagt alleen als de database uit appsettings.json (LocalDB) bereikbaar is.
+        // Test 1: kunnen we zelf een verbinding openen en een query uitvoeren?
         [Fact]
-        public void DatabaseConnectie_Werkt()
+        public void DatabaseConnectie_Query_Werkt()
         {
-            // Arrange: dezelfde configuratie (appsettings.json) en DatabaseConnection als de applicatie gebruikt.
-            var configuratie = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false)
-                .Build();
-            var databaseConnection = new DatabaseConnection(configuratie);
+            // Arrange
+            DatabaseConnection databaseConnection = MaakDatabaseConnection();
+            using SqlConnection verbinding = databaseConnection.MaakVerbinding();
+            ILogger logger = MaakLogger();
 
-            // ILoggerFactory maakt loggers aan; hier loggen we naar de console en naar het Debug-venster.
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().AddDebug());
-            var logger = loggerFactory.CreateLogger<DatabaseTests>();
+            // Act
+            verbinding.Open();
+            using SqlCommand command = new SqlCommand("SELECT 1", verbinding);
+            object? resultaat = command.ExecuteScalar();
 
-
-            // Act: de verbinding openen en een eenvoudige query uitvoeren.
-            using var verbinding = databaseConnection.MaakVerbinding();
-            logger.LogInformation("Verbinding maken met database {Database} op server {Server}...", verbinding.Database, verbinding.DataSource);
-            object? resultaat;
-
-            try
-            {
-                verbinding.Open();
-                using var command = new SqlCommand("SELECT 1", verbinding);
-                resultaat = command.ExecuteScalar();
-            }
-            catch (SqlException ex)
-            {
-                // Mislukt de verbinding, dan loggen we de fout en laten we de test falen.
-                logger.LogInformation(ex, "Databaseconnectie werkt niet: {Reden}", ex.Message);
-                throw;
-            }
-
-            logger.LogInformation("Databaseconnectie werkt: verbonden met database {Database} op server {Server}.", verbinding.Database, verbinding.DataSource);
-
-
-            // Assert: de verbinding is open en de database geeft antwoord op de query.
+            // Assert
+            // We loggen eerst de echte waarde, zodat je die ook ziet als de assert faalt.
+            logger.LogInformation("Assert 1: status van de verbinding is {Status} (verwacht: Open).", verbinding.State);
             Assert.Equal(ConnectionState.Open, verbinding.State);
+
+            logger.LogInformation("Assert 2: resultaat van SELECT 1 is {Resultaat} (verwacht: 1).", resultaat);
             Assert.Equal(1, resultaat);
         }
 
-        // Integratietest: test dezelfde databasecontrole die Program.cs bij het opstarten uitvoert.
+        // Test 2: werkt de controle die Program.cs bij het opstarten uitvoert?
         [Fact]
         public void ControleerDatabaseConnectie_DatabaseBereikbaar()
         {
-            // Arrange: dezelfde configuratie (appsettings.json) en DatabaseConnection als de applicatie gebruikt.
-            var configuratie = new ConfigurationBuilder()
+            // Arrange
+            DatabaseConnection databaseConnection = MaakDatabaseConnection();
+            ILogger logger = MaakLogger();
+
+            // Act
+            bool databaseWerkt = Program.ControleerDatabaseConnectie(databaseConnection, logger);
+
+            // Assert
+            Assert.True(databaseWerkt);
+        }
+
+
+
+
+
+
+        // Leest appsettings.json in en maakt daarmee een DatabaseConnection,
+        // precies zoals de applicatie dat zelf ook doet.
+        private static DatabaseConnection MaakDatabaseConnection()
+        {
+            IConfigurationRoot configuratie = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
-            var databaseConnection = new DatabaseConnection(configuratie);
-            using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole().AddDebug());
-            var logger = loggerFactory.CreateLogger<DatabaseTests>();
+            return new DatabaseConnection(configuratie);
+        }
 
+        // Maakt een logger die berichten naar de console en het Debug-venster schrijft.
+        private static ILogger MaakLogger()
+        {
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.AddDebug();
+            });
 
-            // Act: de controle uit Program.cs uitvoeren.
-            var databaseWerkt = WebApplication1.Program.ControleerDatabaseConnectie(databaseConnection, logger);
-
-
-            // Assert: de database is bereikbaar.
-            Assert.True(databaseWerkt);
+            return loggerFactory.CreateLogger<DatabaseTests>();
         }
     }
 }

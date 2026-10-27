@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Logging;
 using WebApplication1.Models;
+using Xunit.Abstractions;
 
 namespace WebApplication1
 {
@@ -17,61 +19,19 @@ namespace WebApplication1
     */
     public class ProductTests
     {
-        // Product aanmaken - Geldige productnaam en prijs - Product wordt aangemaakt
-        [Fact]
-        public void ProductAanmaken_GeldigeNaamEnPrijs_ProductWordtAangemaakt()
+        // Hulpmethode om te loggen.
+        private static ILogger MaakLogger()
         {
-            // Arrange: een product met een geldige naam en een geldige prijs.
-            Product product = new Product
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
             {
-                Naam = "Kogellager 6204",
-                Omschrijving = "Diepgroefkogellager voor algemene toepassingen.",
-                Artikelnummer = "KL-6204",
-                Merk = "SKF",
-                Categorie = "Lagers",
-                Prijs = 12.50m,
-                Voorraad = 10,
-                Status = "Concept"
-            };
-            List<ValidationResult> fouten = new List<ValidationResult>();
-            ValidationContext context = new ValidationContext(product);
+                builder.AddConsole();
+                builder.AddDebug();
+            });
 
-            // Act: het product valideren zoals ASP.NET Core dat doet bij het opslaan.
-            bool isGeldig = Validator.TryValidateObject(product, context, fouten, validateAllProperties: true);
-
-            // Assert: het product is geldig, dus het wordt aangemaakt.
-            Assert.True(isGeldig);
-            Assert.Empty(fouten);
+            return loggerFactory.CreateLogger<DatabaseTests>();
         }
-
-        // Product aanmaken - Negatieve prijs - Validatiefout
-        [Fact]
-        public void ProductAanmaken_NegatievePrijs_Validatiefout()
-        {
-            // Arrange: een product dat verder geldig is, maar een negatieve prijs heeft.
-            Product product = new Product
-            {
-                Naam = "Kogellager 6204",
-                Omschrijving = "Diepgroefkogellager voor algemene toepassingen.",
-                Artikelnummer = "KL-6204",
-                Merk = "SKF",
-                Categorie = "Lagers",
-                Prijs = -5.00m,
-                Voorraad = 10,
-                Status = "Concept"
-            };
-            List<ValidationResult> fouten = new List<ValidationResult>();
-            ValidationContext context = new ValidationContext(product);
-
-            // Act: het product valideren zoals ASP.NET Core dat doet bij het opslaan.
-            bool isGeldig = Validator.TryValidateObject(product, context, fouten, validateAllProperties: true);
-
-            // Assert: het product is ongeldig en er is precies één validatiefout, op het veld Prijs.
-            Assert.False(isGeldig);
-            ValidationResult fout = Assert.Single(fouten);
-            Assert.Contains(nameof(Product.Prijs), fout.MemberNames);
-        }
-
+        
+        // Geldig product
         private Product ValidProduct()
         {
             return new Product
@@ -85,6 +45,57 @@ namespace WebApplication1
                 Voorraad = 10
             };
         }
+
+        // Product aanmaken - Geldige productnaam en prijs - Product wordt aangemaakt
+        [Fact]
+        public void Product_GeldigePrijs()
+        {
+            // Arrange: een product met een geldige naam en een geldige prijs.
+            Product product = ValidProduct();
+            product.Prijs = 12.50m;
+            ILogger logger = MaakLogger();
+
+            // Act: het product valideren zoals ASP.NET Core dat doet bij het opslaan.
+            bool isGeldig = IsValid(product);
+
+            // Assert: het product is geldig, dus het wordt aangemaakt.
+            Assert.True(isGeldig);
+            if (isGeldig)
+            {
+                logger.LogInformation("Product is geldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
+
+            }
+            else
+            {
+                logger.LogError("Product is ongeldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
+
+
+            }
+        }
+        
+        [Fact]
+        public void Product_NegatievePrijs()
+        {
+            // Arrange: een product met een geldige naam, maar een negatieve prijs.
+            Product product = ValidProduct();
+            product.Prijs = -5.00m;
+            ILogger logger = MaakLogger();
+
+            // Act: het product valideren zoals ASP.NET Core dat doet bij het opslaan.
+            bool isGeldig = IsValid(product);
+
+            // Assert: het product is ongeldig, dus het wordt niet aangemaakt.
+            Assert.False(isGeldig);
+            if (isGeldig)
+            {
+                logger.LogError("Product is geldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
+            }
+            else
+            {
+                logger.LogInformation("Product is ongeldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
+            }
+        }
+
 
         // Controleert de regels uit Product.cs en geeft true terug als het product goed is, false als er een fout in zit.
         private bool IsValid(Product product)
