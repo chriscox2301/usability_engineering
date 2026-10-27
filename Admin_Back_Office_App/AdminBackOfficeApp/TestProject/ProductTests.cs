@@ -36,7 +36,7 @@ namespace WebApplication1
 
             return loggerFactory.CreateLogger<DatabaseTests>();
         }
-        
+
         // Geldig product
         private Product ValidProduct()
         {
@@ -72,18 +72,18 @@ namespace WebApplication1
             bool isGeldig = IsValid(product);
 
             // Assert: het product is geldig, dus het wordt aangemaakt.
-            Assert.True(isGeldig);
             if (isGeldig)
             {
-                logger.LogInformation("Product is geldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
-
+                logger.LogInformation("{Test}: GESLAAGD - prijs {Prijs} werd terecht geaccepteerd.",
+                    nameof(Product_GeldigePrijs), product.Prijs);
             }
             else
             {
-                logger.LogError("Product is ongeldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
-
-
+                logger.LogError("{Test}: MISLUKT - prijs {Prijs} werd afgekeurd, maar had geaccepteerd moeten worden.",
+                    nameof(Product_GeldigePrijs), product.Prijs);
             }
+
+            Assert.True(isGeldig);
         }
         
         [Fact]
@@ -98,20 +98,72 @@ namespace WebApplication1
             bool isGeldig = IsValid(product);
 
             // Assert: het product is ongeldig, dus het wordt niet aangemaakt.
-            Assert.False(isGeldig);
             if (isGeldig)
             {
-                logger.LogInformation("Product is geldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
-
+                logger.LogError("{Test}: MISLUKT - prijs {Prijs} werd geaccepteerd, maar had afgekeurd moeten worden.",
+                    nameof(Product_NegatievePrijs), product.Prijs);
             }
             else
             {
-                logger.LogInformation("Product is ongeldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
-
-
+                logger.LogInformation("{Test}: GESLAAGD - prijs {Prijs} werd terecht afgekeurd.",
+                    nameof(Product_NegatievePrijs), product.Prijs);
             }
+
+            Assert.False(isGeldig);
         }
 
+        [Fact]
+        public void Product_Naam_Null_Waarde()
+        {
+            // Arrange: een product met een null-waarde voor de naam.
+            Product product = ValidProduct();
+            product.Naam = null!;
+            ILogger logger = MaakLogger();
+
+            // Act: het product valideren zoals ASP.NET Core dat doet bij het opslaan.
+            bool isGeldig = IsValid(product);
+
+            // Assert: het product is ongeldig, dus het wordt niet aangemaakt.
+            if (isGeldig)
+            {
+                logger.LogError("{Test}: MISLUKT - naam null werd geaccepteerd, maar had afgekeurd moeten worden.",
+                    nameof(Product_Naam_Null_Waarde));
+            }
+            else
+            {
+                logger.LogInformation("{Test}: GESLAAGD - naam null werd terecht afgekeurd.",
+                    nameof(Product_Naam_Null_Waarde));
+            }
+
+            Assert.False(isGeldig);
+        }
+
+        [Fact]
+        public void Product_Prijs_Nul_Waarde() // Nul waarde is 0 NIET NULL!
+        {             
+            // Arrange: een product met een null-waarde voor de prijs.
+            Product product = ValidProduct();
+            product.Prijs = 0m;
+            ILogger logger = MaakLogger();
+
+            // Act: het product valideren zoals ASP.NET Core dat doet bij het opslaan.
+            bool isGeldig = IsValid(product);
+
+            // Assert: het product is ongeldig, dus het wordt niet aangemaakt.
+            if (isGeldig)
+            {
+                logger.LogError("{Test}: MISLUKT - prijs {Prijs} werd geaccepteerd, maar had afgekeurd moeten worden.",
+                    nameof(Product_Prijs_Nul_Waarde), product.Prijs);
+            }
+            else
+            {
+                logger.LogInformation("{Test}: GESLAAGD - prijs {Prijs} werd terecht afgekeurd.",
+                    nameof(Product_Prijs_Nul_Waarde), product.Prijs);
+            }
+
+            Assert.False(isGeldig);
+        }
+        
         // -----------------------------------------------------------------------------------------------------------------
         private readonly Mock<IProductRepository> _repoMock = new Mock<IProductRepository>();
         private Product ValideProduct() => new Product
