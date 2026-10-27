@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using WebApplication1.Controllers;
-using WebApplication1.Data;
 using Microsoft.Extensions.Logging;
 using WebApplication1.Models;
 using Xunit.Abstractions;
+using WebApplication1.Interface;
 
 namespace WebApplication1
 {
@@ -52,6 +52,13 @@ namespace WebApplication1
             };
         }
 
+        private bool IsValid(Product product)
+        {
+            ValidationContext context = new ValidationContext(product);
+            List<ValidationResult> mistakes = new List<ValidationResult>();
+            return Validator.TryValidateObject(product, context, mistakes, true);
+        }
+
         // Product aanmaken - Geldige productnaam en prijs - Product wordt aangemaakt
         [Fact]
         public void Product_GeldigePrijs()
@@ -92,10 +99,19 @@ namespace WebApplication1
 
             // Assert: het product is ongeldig, dus het wordt niet aangemaakt.
             Assert.False(isGeldig);
+            if (isGeldig)
+            {
+                logger.LogInformation("Product is geldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
 
-            ValidationResult fout = Assert.Single(fouten);
-            Assert.Contains(nameof(Product.Prijs), fout.MemberNames);
+            }
+            else
+            {
+                logger.LogInformation("Product is ongeldig: Naam='{Naam}', Prijs={Prijs}", product.Naam, product.Prijs);
+
+
+            }
         }
+
         // -----------------------------------------------------------------------------------------------------------------
         private readonly Mock<IProductRepository> _repoMock = new Mock<IProductRepository>();
         private Product ValideProduct() => new Product

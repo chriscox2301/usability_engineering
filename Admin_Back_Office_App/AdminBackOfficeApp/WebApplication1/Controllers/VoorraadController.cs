@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Data;
+using WebApplication1.Interface;
 
 namespace WebApplication1.Controllers
 {
@@ -11,10 +11,10 @@ namespace WebApplication1.Controllers
     */
     public class VoorraadController : Controller
     {
-        private readonly ProductRepository _productRepository;
+        private readonly IProductRepository _productRepository;
 
         // Constructor ontvangt de repository via Dependency Injection.
-        public VoorraadController(ProductRepository productRepository)
+        public VoorraadController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }

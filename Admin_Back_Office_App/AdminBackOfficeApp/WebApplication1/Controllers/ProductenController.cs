@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.Data;
+using WebApplication1.Interface;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
