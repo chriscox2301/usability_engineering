@@ -15,7 +15,7 @@ namespace WebApplication1.Controllers
     */
     public class ProductenController : Controller
     {
-        private readonly ProductRepository _productRepository;
+        private readonly IProductRepository _productRepository;
 
         /*
             Constructor:
@@ -23,7 +23,7 @@ namespace WebApplication1.Controllers
             De parameter productRepository wordt opgeslagen in _productRepository.
             Daardoor kan elke action in deze controller dezelfde repository gebruiken.
         */
-        public ProductenController(ProductRepository productRepository)
+        public ProductenController(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
