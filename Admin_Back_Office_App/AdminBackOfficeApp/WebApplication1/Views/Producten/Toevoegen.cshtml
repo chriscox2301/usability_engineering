@@ -113,7 +113,7 @@
 
 @* Er mag maar één @section Scripts per View zijn, anders geeft Razor de fout "Section 'Scripts' is already defined". *@
 @section Scripts {
-    @* toevoegen.js controleert Prijs, Voorraad en Artikelnummer live.
+    @* toevoegen.js controleert alle verplichte velden (ook Prijs, Voorraad en Artikelnummer) live.
        _ValidationScriptsPartial (jQuery Validate) laden we hier bewust niet: die keurt een prijs met komma (12,50) af. *@
     <script src="~/js/producten/toevoegen.js" asp-append-version="true"></script>
     <script>

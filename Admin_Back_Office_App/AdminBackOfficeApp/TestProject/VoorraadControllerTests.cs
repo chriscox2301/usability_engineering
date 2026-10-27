@@ -15,6 +15,7 @@ namespace WebApplication1
     {
         private readonly Mock<IProductRepository> _repoMock = new Mock<IProductRepository>();
 
+        // Constuctor
         private VoorraadController MaakController()
         {
             VoorraadController controller = new VoorraadController(_repoMock.Object);
@@ -23,7 +24,7 @@ namespace WebApplication1
             return controller;
         }
 
-        // Hulpmethode om te loggen.
+        // Logger
         private static ILogger MaakLogger()
         {
             ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
@@ -34,6 +35,7 @@ namespace WebApplication1
 
             return loggerFactory.CreateLogger<VoorraadControllerTests>();
         }
+
 
         [Fact]
         public void Aanpassen_NegatieveVoorraad_WordtNietOpgeslagen()
@@ -51,7 +53,7 @@ namespace WebApplication1
             // Act
             IActionResult resultaat = controller.Aanpassen(id: 1, voorraad: voorraad);
 
-            // Assert: eerst loggen, dan controleren.
+            // Assert
             if (isOpgeslagen)
             {
                 logger.LogError("{Test}: MISLUKT - voorraad {Voorraad} werd opgeslagen, maar had afgekeurd moeten worden.",
@@ -67,6 +69,7 @@ namespace WebApplication1
             _repoMock.Verify(r => r.PasVoorraadAan(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
             Assert.IsType<RedirectToActionResult>(resultaat);
         }
+
 
         [Fact]
         public void Aanpassen_GeldigeVoorraad_WordtOpgeslagen()
@@ -84,7 +87,7 @@ namespace WebApplication1
             // Act
             controller.Aanpassen(id: 1, voorraad: voorraad);
 
-            // Assert: eerst loggen, dan controleren.
+            // Assert
             if (isOpgeslagen)
             {
                 logger.LogInformation("{Test}: GESLAAGD - voorraad {Voorraad} werd terecht opgeslagen.",

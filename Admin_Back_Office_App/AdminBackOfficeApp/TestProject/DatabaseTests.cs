@@ -57,11 +57,6 @@ namespace WebApplication1
             Assert.True(databaseWerkt);
         }
 
-
-
-
-
-
         // Leest appsettings.json in en maakt daarmee een DatabaseConnection,
         // precies zoals de applicatie dat zelf ook doet.
         private static DatabaseConnection MaakDatabaseConnection()
