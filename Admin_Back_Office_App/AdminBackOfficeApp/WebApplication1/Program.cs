@@ -134,7 +134,7 @@ namespace WebApplication1
 
                 verbinding.Open();
 
-                using var command = new SqlCommand("SELECT 1", verbinding);
+                using SqlCommand command = new SqlCommand("SELECT 1", verbinding);
 
                 command.ExecuteScalar();
 
@@ -142,9 +142,9 @@ namespace WebApplication1
 
                 return true;
             }
-            catch (SqlException ex)
+            catch (SqlException exception)
             {
-                logger.LogError(ex, "Databaseconnectie werkt niet: {Reden}", ex.Message);
+                logger.LogError(exception, "Databaseconnectie werkt niet: {Reden}", exception.Message);
 
                 return false;
             }
