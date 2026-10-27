@@ -3,7 +3,8 @@
 
     Technische uitleg:
     - Views/Producten/Toevoegen.cshtml laadt dit bestand via @section Scripts.
-    - Dit script controleert Prijs, Voorraad en Artikelnummer direct tijdens het invullen,
+    - Dit script controleert Prijs, Voorraad, Artikelnummer en de verplichte velden
+      (Naam, Merk, Categorie, Omschrijving) direct tijdens het invullen,
       zodat de gebruiker niet pas na "Opslaan" een melding krijgt.
     - De server controleert alles nog een keer (Product.cs + DecimalModelBinder.cs).
       Deze controle is dus alleen voor gebruiksgemak.
@@ -25,7 +26,24 @@ document.addEventListener('DOMContentLoaded', function () {
             span.textContent = melding;
         }
         input.classList.toggle('is-invalid', melding !== '');
+        // Na een mislukte POST zet de server "input-validation-error" op het veld. Die halen we weg zodra het klopt.
+        if (melding === '') {
+            input.classList.remove('input-validation-error');
+        }
         return melding === '';
+    }
+
+    // Verplichte velden zonder extra regels: alleen controleren of er iets is ingevuld/gekozen.
+    // De meldingen zijn dezelfde als de [Required]-meldingen in Product.cs.
+    const verplichteVelden = [
+        { input: document.getElementById('Naam'), melding: 'Vul een naam in.' },
+        { input: document.getElementById('Merk'), melding: 'Vul een merk in.' },
+        { input: document.getElementById('Categorie'), melding: 'Kies een categorie.' },
+        { input: document.getElementById('Omschrijving'), melding: 'Vul een omschrijving in.' }
+    ].filter(function (veld) { return veld.input !== null; });
+
+    function controleerVerplicht(veld) {
+        return toonMelding(veld.input, veld.input.value.trim() === '' ? veld.melding : '');
     }
 
     // Zet "12,5", "12.5" of "1.234,56" om naar een getal. Geeft null terug als het geen geldig bedrag is.
@@ -123,13 +141,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Bij opslaan nog één keer alles controleren. Bij een fout wordt het formulier niet verstuurd.
+    // Verplichte velden: na het verlaten (of kiezen bij een dropdown) controleren, daarna live zodra er een fout staat.
+    verplichteVelden.forEach(function (veld) {
+        veld.input.addEventListener('blur', function () { controleerVerplicht(veld); });
+        veld.input.addEventListener('change', function () { controleerVerplicht(veld); });
+        veld.input.addEventListener('input', function () {
+            if (veld.input.classList.contains('is-invalid')) {
+                controleerVerplicht(veld);
+            }
+        });
+    });
+
+    // Bij opslaan alles controleren, zodat de gebruiker in één keer álle ontbrekende velden ziet.
+    // Bij een fout wordt het formulier niet verstuurd.
     formulier.addEventListener('submit', function (event) {
+        // map() (geen every()) zodat elk veld gecontroleerd wordt, ook als een eerder veld al fout is.
+        const verplichtOk = verplichteVelden.map(controleerVerplicht).every(Boolean);
         const prijsOk = controleerPrijs();
         const voorraadOk = controleerVoorraad();
         const artikelnummerOk = controleerArtikelnummer();
 
-        if (!prijsOk || !voorraadOk || !artikelnummerOk) {
+        if (!verplichtOk || !prijsOk || !voorraadOk || !artikelnummerOk) {
             event.preventDefault();
             const eersteFout = formulier.querySelector('.is-invalid');
             if (eersteFout) {
