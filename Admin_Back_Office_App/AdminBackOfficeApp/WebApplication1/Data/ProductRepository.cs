@@ -15,7 +15,7 @@ namespace WebApplication1.Data
         - SqlDataReader leest resultaatrijen terug.
         - MapProduct() zet één SQL-rij om naar één Product-model.
     */
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly DatabaseConnection _databaseConnection;
 

@@ -66,7 +66,7 @@ namespace WebApplication1
             builder.Services.AddScoped<DatabaseConnection>();
 
             // Repositories vormen de datalaag. Controllers gebruiken deze klassen in plaats van direct SQL te schrijven.
-            builder.Services.AddScoped<ProductRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<BestellingRepository>();
             builder.Services.AddScoped<CategorieRepository>();
             builder.Services.AddScoped<LeverancierRepository>();

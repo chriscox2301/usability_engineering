@@ -1,4 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Moq;
+using WebApplication1.Controllers;
+using WebApplication1.Data;
 using WebApplication1.Models;
 
 namespace WebApplication1
@@ -71,85 +77,100 @@ namespace WebApplication1
             ValidationResult fout = Assert.Single(fouten);
             Assert.Contains(nameof(Product.Prijs), fout.MemberNames);
         }
-
-        private Product ValidProduct()
+        // -----------------------------------------------------------------------------------------------------------------
+        private readonly Mock<IProductRepository> _repoMock = new Mock<IProductRepository>();
+        private Product ValideProduct() => new Product
         {
-            return new Product
-            {
-                Naam = "Kogellager 6204",
-                Omschrijving = "Diepgroefkogellager",
-                Artikelnummer = "KL-6204",
-                Merk = "SKF",
-                Categorie = "Lagers",
-                Prijs = 12.99m,
-                Voorraad = 10
-            };
+            Naam = "Kogellager 6204",
+            Omschrijving = "Diepgroefkogellager voor algemene toepassingen.",
+            Artikelnummer = "KL-6204",
+            Merk = "SKF",
+            Categorie = "Lagers",
+            Prijs = 12.50m,
+            Voorraad = 10,
+            Status = "Concept"
+        };
+
+        private ProductenController MaakController()
+        {
+            // Nep-database: nog geen producten, lege keuzelijsten.
+            _repoMock.Setup(r => r.GetAlleProducten()).Returns(new List<Product>());
+            _repoMock.Setup(r => r.GetCategorieNamen()).Returns(new List<string>());
+            _repoMock.Setup(r => r.GetLeverancierNamen()).Returns(new List<string>());
+
+            ProductenController controller = new ProductenController(_repoMock.Object);
+            // TempData is nodig omdat Toevoegen een melding zet.
+            controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+            return controller;
         }
 
         // Controleert de regels uit Product.cs en geeft true terug als het product goed is, false als er een fout in zit.
-        private bool IsValid(Product product)
+        private static void Valideer(Controller controller, Product product)
         {
-            ValidationContext context = new ValidationContext(product);
-            List<ValidationResult> mistakes = new List<ValidationResult>();
-            return Validator.TryValidateObject(product, context, mistakes, true);
+            List<ValidationResult> fouten = new List<ValidationResult>();
+            Validator.TryValidateObject(product, new ValidationContext(product), fouten, true);
+            foreach (ValidationResult fout in fouten)
+                controller.ModelState.AddModelError(fout.MemberNames.FirstOrDefault() ?? "", fout.ErrorMessage!);
         }
         // Unit tests Chris ----------------------------------------------------------------------------------------------------
         // TC01
         [Fact]
-        public void ValidNameAndPrice_ProductIsValid()
+        public void Toevoegen_GeldigProduct_WordtOpgeslagen()
         {
             // Arrange
-            Product product = ValidProduct();
-            // Act
-            // Assert
-            Assert.True(IsValid(product));
-        }
-        // TC02
-        [Fact]
-        public void NegativePrice_ReturnsFalse()
-        {
-            // Arrange
-            Product product = ValidProduct();
-            // Act
-            product.Prijs = -1.00m;
-            // Assert
-            Assert.False(IsValid(product));
-        }
+            ProductenController controller = MaakController();
+            Product product = ValideProduct();
+            Valideer(controller, product);
 
-        // TC03
-        [Fact]
-        public void PriceZero_ReturnsFalse()
+            // Act
+            var resultaat = controller.Toevoegen(product);
+
+            // Assert
+            _repoMock.Verify(r => r.VoegProductToe(product), Times.Once);
+            RedirectToActionResult redirectResult = Assert.IsType<RedirectToActionResult>(resultaat);
+            Assert.Equal("Index", redirectResult.ActionName);
+        }
+        
+        [Theory]
+        [InlineData(-1.00)]         // TC02
+        [InlineData(0.00)]          // TC03
+        [InlineData(100000000.00)]  // TC05
+        public void Toevoegen_OngeldigProduct_WordtNietOpgeslagen(double prijs)
         {
             // Arrange
-            Product product = ValidProduct();
+            ProductenController controller = MaakController();
+            Product product = ValideProduct();
+            product.Prijs = (decimal)prijs;
+            Valideer(controller, product);
+
             // Act
-            product.Prijs = 0.00m;
+            var resultaat = controller.Toevoegen(product);
+
             // Assert
-            Assert.False(IsValid(product));
+            _repoMock.Verify(r => r.VoegProductToe(product), Times.Never);
+            ViewResult view = Assert.IsType<ViewResult>(resultaat);
+            Assert.Same(product, view.Model);
+            Assert.True(controller.ModelState.ContainsKey(nameof(Product.Prijs)));
         }
 
         // TC04
         [Fact]
-        public void MaxVoorraad_IsValid()
+        public void Toevoegen_ArtikelnummerBestaatAl_WordtNietOpgeslagen()
         {
             // Arrange
-            Product product = ValidProduct();
-            // Act
-            product.Voorraad = 1000;
-            // Assert
-            Assert.True(IsValid(product));
-        }
+            ProductenController controller = MaakController();
+            _repoMock.Setup(r => r.GetAlleProducten())
+                .Returns(new List<Product> { new Product { Artikelnummer = "KL-6204" } });
+            Product product = ValideProduct();
+            Valideer(controller, product);
 
-        // TC05
-        [Fact]
-        public void ToHighPrice_ReturnsError()
-        {
-            // Arrange
-            Product product = ValidProduct();
             // Act
-            product.Prijs = 100000000m;
+            var resultaat = controller.Toevoegen(product);
+
             // Assert
-            Assert.False(IsValid(product));
+            _repoMock.Verify(r => r.VoegProductToe(It.IsAny<Product>()), Times.Never);
+            Assert.IsType<ViewResult>(resultaat);
+            Assert.True(controller.ModelState.ContainsKey(nameof(Product.Artikelnummer)));
         }
 
         // Unit tests Milan --------------------------------------------------------------------------------------
