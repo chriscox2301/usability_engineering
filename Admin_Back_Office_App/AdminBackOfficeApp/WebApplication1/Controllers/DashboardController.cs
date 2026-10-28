@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Data;
+using WebApplication1.Interface;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
@@ -17,7 +18,7 @@ namespace WebApplication1.Controllers
     public class DashboardController : Controller
     {
         // private readonly betekent: deze variabele wordt alleen in de constructor gezet en daarna niet vervangen.
-        private readonly ProductRepository _productRepository;
+        private readonly IProductRepository _productRepository;
         private readonly BestellingRepository _bestellingRepository;
         private readonly KlantenserviceRepository _klantenserviceRepository;
 
@@ -26,7 +27,7 @@ namespace WebApplication1.Controllers
             ASP.NET Core ziet in Program.cs dat ProductRepository en BestellingRepository geregistreerd zijn.
             Daarom geeft Dependency Injection deze objecten automatisch mee aan deze constructor.
         */
-        public DashboardController(ProductRepository productRepository, BestellingRepository bestellingRepository, KlantenserviceRepository klantenserviceRepository)
+        public DashboardController(IProductRepository productRepository, BestellingRepository bestellingRepository, KlantenserviceRepository klantenserviceRepository)
         {
             // De parameters worden opgeslagen in private velden zodat alle actions ze kunnen gebruiken.
             _productRepository = productRepository;

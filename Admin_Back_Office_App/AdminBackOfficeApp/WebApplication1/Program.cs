@@ -1,5 +1,7 @@
+using Microsoft.Data.SqlClient;
 using WebApplication1.Data;
 using WebApplication1.Infrastructure;
+using WebApplication1.Interface;
 
 namespace WebApplication1
 {
@@ -20,6 +22,18 @@ namespace WebApplication1
     {
         public static void Main(string[] args)
         {
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Debug);
+            });
+
+            ILogger<Program> logger = loggerFactory.CreateLogger<Program>();
+
+            logger.LogInformation("Applicatie gestart. ");
+
+
+
             // Builder bevat configuratie uit appsettings.json, environment settings en geregistreerde services.
             var builder = WebApplication.CreateBuilder(args);
 
@@ -53,7 +67,7 @@ namespace WebApplication1
             builder.Services.AddScoped<DatabaseConnection>();
 
             // Repositories vormen de datalaag. Controllers gebruiken deze klassen in plaats van direct SQL te schrijven.
-            builder.Services.AddScoped<ProductRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<BestellingRepository>();
             builder.Services.AddScoped<CategorieRepository>();
             builder.Services.AddScoped<LeverancierRepository>();
@@ -62,6 +76,17 @@ namespace WebApplication1
 
             // Bouwt de applicatie op basis van alle instellingen hierboven.
             var app = builder.Build();
+
+
+            // Integratietest bij het opstarten: werkt de verbinding met de database?
+            // Het resultaat komt in de console, direct onder "Applicatie gestart.".
+            using (var scope = app.Services.CreateScope())
+            {
+                var databaseConnection = scope.ServiceProvider.GetRequiredService<DatabaseConnection>();
+
+                ControleerDatabaseConnectie(databaseConnection, logger);
+            }
+
 
             // In productie wordt een nette foutpagina gebruikt in plaats van technische exceptiondetails.
             if (!app.Environment.IsDevelopment())
@@ -95,5 +120,36 @@ namespace WebApplication1
             // Start de webserver.
             app.Run();
         }
+
+
+        /*
+            Opent een verbinding met de database, voert "SELECT 1" uit en logt of dat gelukt is.
+            Geeft true terug als de database werkt, anders false.
+            Public static, zodat de xUnit-test in TestProject dezelfde controle kan aanroepen.
+        */
+        public static bool ControleerDatabaseConnectie(DatabaseConnection databaseConnection, ILogger logger)
+        {
+            try
+            {
+                using var verbinding = databaseConnection.MaakVerbinding();
+
+                verbinding.Open();
+
+                using SqlCommand command = new SqlCommand("SELECT 1", verbinding);
+
+                command.ExecuteScalar();
+
+                logger.LogInformation("Databaseconnectie werkt: verbonden met database {Database} op server {Server}.", verbinding.Database, verbinding.DataSource);
+
+                return true;
+            }
+            catch (SqlException exception)
+            {
+                logger.LogError(exception, "Databaseconnectie werkt niet: {Reden}", exception.Message);
+
+                return false;
+            }
+        }
     }
+    
 }

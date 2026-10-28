@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using System.Data;
+using WebApplication1.Interface;
 using WebApplication1.Models;
 
 namespace WebApplication1.Data
@@ -15,7 +16,7 @@ namespace WebApplication1.Data
         - SqlDataReader leest resultaatrijen terug.
         - MapProduct() zet één SQL-rij om naar één Product-model.
     */
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly DatabaseConnection _databaseConnection;
 
