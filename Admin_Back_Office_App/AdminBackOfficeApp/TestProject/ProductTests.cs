@@ -210,7 +210,7 @@ namespace WebApplication1
             Valideer(controller, product);
 
             // Act
-            var resultaat = controller.Toevoegen(product);
+            IActionResult resultaat = controller.Toevoegen(product);
 
             // Assert
             _repoMock.Verify(r => r.VoegProductToe(product), Times.Once);
@@ -231,7 +231,7 @@ namespace WebApplication1
             Valideer(controller, product);
 
             // Act
-            var resultaat = controller.Toevoegen(product);
+            IActionResult resultaat = controller.Toevoegen(product);
 
             // Assert
             _repoMock.Verify(r => r.VoegProductToe(product), Times.Never);
@@ -252,7 +252,7 @@ namespace WebApplication1
             Valideer(controller, product);
 
             // Act
-            var resultaat = controller.Toevoegen(product);
+            IActionResult resultaat = controller.Toevoegen(product);
 
             // Assert
             _repoMock.Verify(r => r.VoegProductToe(It.IsAny<Product>()), Times.Never);
