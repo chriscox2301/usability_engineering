@@ -1,9 +1,10 @@
 using Microsoft.Data.SqlClient;
 using WebApplication1.Models;
+using WebApplication1.Interface;
 
 namespace WebApplication1.Data
 {
-    /*
+	/*
         BestellingRepository is de datalaag voor orders.
 
         Belangrijk voor de docentfeedback:
@@ -12,8 +13,8 @@ namespace WebApplication1.Data
         - Extra back-office velden worden automatisch toegevoegd als ze nog ontbreken.
           Hierdoor blijft de klantapp werken, want die hoeft deze extra kolommen niet te vullen.
     */
-    public class BestellingRepository
-    {
+	public class BestellingRepository : IBestellingRepository
+	{
         private readonly DatabaseConnection _databaseConnection;
 
         public BestellingRepository(DatabaseConnection databaseConnection)

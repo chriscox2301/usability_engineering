@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Data;
+using Microsoft.Extensions.Logging;
+using WebApplication1.Interface;
 
 namespace WebApplication1.Controllers
 {
@@ -13,11 +15,15 @@ namespace WebApplication1.Controllers
     */
     public class BestellingenController : Controller
     {
-        private readonly BestellingRepository _bestellingRepository;
+        private readonly IBestellingRepository _bestellingRepository;
+        private readonly ILogger<BestellingenController> _logger;
 
-        public BestellingenController(BestellingRepository bestellingRepository)
+        public BestellingenController(
+            IBestellingRepository bestellingRepository,
+            ILogger<BestellingenController> logger)
         {
             _bestellingRepository = bestellingRepository;
+            _logger = logger;
         }
 
         public IActionResult Index(string? klant, string? status, string? prioriteit)
@@ -83,18 +89,35 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Details", new { id });
         }
 
-        [HttpPost]
-        public IActionResult StatusWijzigen(int id, string status)
-        {
-            var gelukt = _bestellingRepository.UpdateStatus(id, status);
-            TempData["Melding"] = gelukt
-                ? $"Status is aangepast naar '{status}'."
-                : "Status niet aangepast: alle orderpicker-checkboxen moeten eerst aangevinkt zijn.";
 
-            return RedirectToAction("Details", new { id });
-        }
+		[HttpPost]
+		public IActionResult StatusWijzigen(int id, string status)
+		{
+			bool gelukt = _bestellingRepository.UpdateStatus(id, status);
 
-        [HttpPost]
+			if (gelukt)
+			{
+				_logger.LogInformation(
+					"Status van bestelling {Id} gewijzigd naar {Status}.",
+					id, status);
+
+				TempData["Melding"] = $"Status is aangepast naar '{status}'.";
+			}
+			else
+			{
+				_logger.LogWarning(
+					"Status van bestelling {Id} kon niet worden aangepast.",
+					id);
+
+				TempData["Melding"] =
+					"Status niet aangepast: alle orderpicker-checkboxen moeten eerst aangevinkt zijn.";
+			}
+
+			return RedirectToAction("Details", new { id });
+		}
+
+
+		[HttpPost]
         public IActionResult BezorgerKoppelen(int id, int? bezorgerId)
         {
             _bestellingRepository.UpdateBezorger(id, bezorgerId);
