@@ -213,7 +213,6 @@ namespace WebApplication1
 
             // Act
             IActionResult resultaat = controller.Toevoegen(product);
-            controller.Toevoegen(product);
             logger.LogInformation("TC01: Toevoegen gaf {Resultaat} terug.", resultaat.GetType().Name);
 
             // Assert
