@@ -1,3 +1,4 @@
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Interface;
 using WebApplication1.Models;
@@ -16,7 +17,6 @@ namespace WebApplication1.Controllers
     public class ProductenController : Controller
     {
         private readonly IProductRepository _productRepository;
-
         /*
             Constructor:
             Deze constructor ontvangt ProductRepository via Dependency Injection.
@@ -118,6 +118,7 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult Toevoegen()
         {
+            
             // Vult ViewBag.Statussen, ViewBag.Categorieen, ViewBag.Leveranciers en ViewBag.Iconen voor dropdowns.
             // Een nieuw product mag alleen als Concept of Actief beginnen.
             VulProductFormulierKeuzes(Product.StartStatussen);
