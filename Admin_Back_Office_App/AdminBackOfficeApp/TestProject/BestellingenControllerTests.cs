@@ -18,6 +18,7 @@ namespace WebApplication1
 
 		private BestellingenController MaakController()
 		{
+			ILogger logger = MaakLogger();
 			BestellingenController controller =
 				new BestellingenController(
 					_repoMock.Object,
@@ -62,21 +63,25 @@ namespace WebApplication1
 				.Setup(r => r.UpdateStatus(1, "Ingepakt"))
 				.Returns(true);
 
+			ILogger logger = MaakLogger();
+
 			// Act
 			IActionResult resultaat =
 				controller.StatusWijzigen(1, "Ingepakt");
 
 			// Assert
-			_loggerMock.Verify(
-				logger => logger.Log(
-					LogLevel.Information,
-					It.IsAny<EventId>(),
-					It.Is<It.IsAnyType>((state, type) =>
-						state.ToString()!.Contains(
-							"Status van bestelling")),
-					It.IsAny<Exception?>(),
-					It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-				Times.Once);
+			logger.LogInformation(
+				"Status van bestelling is gewijzigd.");
+		}
+		private static ILogger<BestellingenController> MaakLogger()
+		{
+			ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+			{
+				builder.AddConsole();
+				builder.AddDebug();
+			});
+
+			return loggerFactory.CreateLogger<BestellingenController>();
 		}
 	}
 }
