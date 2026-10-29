@@ -70,8 +70,16 @@ namespace WebApplication1
 				controller.StatusWijzigen(1, "Ingepakt");
 
 			// Assert
-			logger.LogInformation(
-				"Status van bestelling is gewijzigd.");
+			Assert.IsType<RedirectToActionResult>(resultaat);
+
+			_repoMock.Verify(
+				r => r.UpdateStatus(1, "Ingepakt"),
+				Times.Once);
+
+			//Logger bericht schrijven
+			logger.LogInformation("Test geslaagd: status is succesvol gewijzigd.");
+
+
 		}
 		private static ILogger<BestellingenController> MaakLogger()
 		{
