@@ -30,6 +30,13 @@
         <small>Ga direct naar voorraadbeheer.</small>
     </a>
 
+    <a class="kpi-card kpi-priority" asp-controller="Bestellingen" asp-action="Index" asp-route-prioriteit="Hoog" title="Bekijk hoge prioriteit bestellingen">
+        <i data-lucide="flame"></i>
+        <span>Hoge prioriteit</span>
+        <strong>@Model.AantalHogePrioriteitBestellingen</strong>
+        <small>Pak urgente orders sneller op.</small>
+    </a>
+
     <a class="kpi-card kpi-orders" asp-controller="Bestellingen" asp-action="Index" asp-route-status="Nieuw" title="Bekijk nieuwe bestellingen">
         <i data-lucide="clipboard-list"></i>
         <span>Nieuwe bestellingen</span>
@@ -42,13 +49,6 @@
         <span>Klachten</span>
         <strong>@Model.AantalOpenstaandeKlachten</strong>
         <small>Bekijk klachten die nog niet zijn afgehandeld.</small>
-    </a>
-
-    <a class="kpi-card kpi-priority" asp-controller="Bestellingen" asp-action="Index" asp-route-prioriteit="Hoog" title="Bekijk hoge prioriteit bestellingen">
-        <i data-lucide="flame"></i>
-        <span>Hoge prioriteit</span>
-        <strong>@Model.AantalHogePrioriteitBestellingen</strong>
-        <small>Pak urgente orders sneller op.</small>
     </a>
 </section>
 
@@ -67,6 +67,24 @@
                     <span class="row-icon"><i data-lucide="@product.Icoon"></i></span>
                     <div><strong>@product.Naam</strong><small>@product.Artikelnummer · @product.Leverancier</small></div>
                     <span class="badge badge-warning">@product.Voorraad op voorraad</span>
+                </div>
+            }
+        </div>
+    </article>
+
+    <article class="panel dashboard-panel dashboard-panel-priority">
+        <div class="panel-header">
+            <h2><span class="panel-color-dot priority-dot"></span>Hoge prioriteit</h2>
+            <a asp-controller="Bestellingen" asp-action="Index" asp-route-prioriteit="Hoog">Orders openen</a>
+        </div>
+        <div class="list-stack">
+            @* foreach loopt door HogePrioriteitBestellingen; de data komt uit BestellingRepository. *@
+            @foreach (var bestelling in Model.HogePrioriteitBestellingen)
+            {
+                <div class="list-row attention-row dashboard-row-priority">
+                    <span class="row-icon"><i data-lucide="flame"></i></span>
+                    <div><strong>@bestelling.Ordernummer</strong><small>@bestelling.KlantNaam · € @bestelling.Totaal</small></div>
+                    <span class="badge badge-warning">@bestelling.Prioriteit</span>
                 </div>
             }
         </div>
@@ -103,24 +121,6 @@
                     <span class="row-icon"><i data-lucide="headset"></i></span>
                     <div><strong>@klacht.Klachtnummer</strong><small>@klacht.KlantNaam · @klacht.Onderwerp</small></div>
                     <a class="badge badge-soft" asp-controller="Klantenservice" asp-action="Index">@klacht.Status</a>
-                </div>
-            }
-        </div>
-    </article>
-
-    <article class="panel dashboard-panel dashboard-panel-priority">
-        <div class="panel-header">
-            <h2><span class="panel-color-dot priority-dot"></span>Hoge prioriteit</h2>
-            <a asp-controller="Bestellingen" asp-action="Index" asp-route-prioriteit="Hoog">Orders openen</a>
-        </div>
-        <div class="list-stack">
-            @* foreach loopt door HogePrioriteitBestellingen; de data komt uit BestellingRepository. *@
-            @foreach (var bestelling in Model.HogePrioriteitBestellingen)
-            {
-                <div class="list-row attention-row dashboard-row-priority">
-                    <span class="row-icon"><i data-lucide="flame"></i></span>
-                    <div><strong>@bestelling.Ordernummer</strong><small>@bestelling.KlantNaam · € @bestelling.Totaal</small></div>
-                    <span class="badge badge-warning">@bestelling.Prioriteit</span>
                 </div>
             }
         </div>

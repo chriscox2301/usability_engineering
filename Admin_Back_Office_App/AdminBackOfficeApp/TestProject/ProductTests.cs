@@ -240,7 +240,26 @@ namespace WebApplication1
             Assert.True(controller.ModelState.ContainsKey(nameof(Product.Prijs)));
         }
 
-        // TC04
+        // TC04: de hoogst toegestane waarden liggen precies op de grens en moeten dus geaccepteerd worden.
+        [Fact]
+        public void Toevoegen_MaximaleWaarden_WordtOpgeslagen()
+        {
+            // Arrange
+            ProductenController controller = MaakController();
+            Product product = ValideProduct();
+            product.Prijs = 99999999.99m;     // hoogste prijs uit Product.cs
+            product.Voorraad = int.MaxValue;  // hoogste integer: 2.147.483.647
+            Valideer(controller, product);
+
+            // Act
+            var resultaat = controller.Toevoegen(product);
+
+            // Assert
+            _repoMock.Verify(r => r.VoegProductToe(product), Times.Once);
+            Assert.IsType<RedirectToActionResult>(resultaat);
+        }
+
+        // TC18
         [Fact]
         public void Toevoegen_ArtikelnummerBestaatAl_WordtNietOpgeslagen()
         {
