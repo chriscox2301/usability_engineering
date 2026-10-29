@@ -58,6 +58,9 @@ namespace WebApplication1.Controllers
             // Hier voorkomen we losse ViewBag-waarden en houden we de dashboarddata overzichtelijk bij elkaar.
             var model = new AdminDashboardViewModel
             {
+                // Telt open bestellingen met prioriteit Hoog
+                AantalHogePrioriteitBestellingen = bestellingen.Count(b => b.Prioriteit == "Hoog" && b.Status != "Bezorgd" && b.Status != "Geannuleerd"),
+
                 // Telt producten waarbij de modelmethode HeeftLageVoorraad() true teruggeeft.
                 AantalLageVoorraadProducten = producten.Count(p => p.HeeftLageVoorraad()),
 
@@ -67,8 +70,6 @@ namespace WebApplication1.Controllers
                 // Telt producten die nog in concept staan. De IsConcept()-methode staat in Product.cs.
                 AantalOpenstaandeKlachten = klachten.Count(k => k.IsOpenstaand()),
 
-                // Telt open bestellingen met prioriteit Hoog.
-                AantalHogePrioriteitBestellingen = bestellingen.Count(b => b.Prioriteit == "Hoog" && b.Status != "Bezorgd" && b.Status != "Geannuleerd"),
 
                 // Deze lijsten worden onder de KPI-kaarten getoond in de dashboard-view.
                 ProductenMetLageVoorraad = producten.Where(p => p.HeeftLageVoorraad()).OrderBy(p => p.Voorraad).ToList(),
