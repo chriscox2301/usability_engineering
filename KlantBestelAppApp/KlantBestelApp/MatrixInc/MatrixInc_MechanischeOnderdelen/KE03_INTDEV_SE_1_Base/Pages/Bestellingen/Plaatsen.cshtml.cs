@@ -2,6 +2,7 @@ using DataAccessLayer.Interfaces;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 
 namespace KE03_INTDEV_SE_1_Base.Pages.Bestellingen
 {
@@ -17,19 +18,33 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Bestellingen
         public string? Foutmelding { get; set; }
 
         [BindProperty]
-        public string Naam { get; set; } = string.Empty;
+		[Required(ErrorMessage = "Vul je naam in.")]
+		[StringLength(100, ErrorMessage = "Je naam mag maximaal 100 tekens bevatten.")]
+		public string Naam { get; set; } = string.Empty;
 
         [BindProperty]
-        public string Email { get; set; } = string.Empty;
+		[Required(ErrorMessage = "Vul je e-mailadres in.")]
+		[EmailAddress(ErrorMessage = "Vul een geldig e-mailadres in, bijvoorbeeld naam@example.com.")]
+		public string Email { get; set; } = string.Empty;
 
         [BindProperty]
-        public string Adres { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Vul je adres in.")]
+        [StringLength(150, ErrorMessage = "Je adres mag maximaal 150 tekens bevatten.")]
+		[RegularExpression(@"^.*\d.*$", ErrorMessage = "Vul ook een huisnummer in, bijvoorbeeld Hoofdstraat 12.")]
+		public string Adres { get; set; } = string.Empty;
 
         [BindProperty]
-        public string Postcode { get; set; } = string.Empty;
+        [Required(ErrorMessage = "Vul je postcode in.")]
+		[RegularExpression(
+	        @"^[1-9][0-9]{3}\s?[A-Za-z]{2}$",
+	        ErrorMessage = "Vul een geldige Nederlandse postcode in, bijvoorbeeld 1234 AB.")]
+		public string Postcode { get; set; } = string.Empty;
 
         [BindProperty]
-        public string Plaats { get; set; } = string.Empty;
+		[Required(ErrorMessage = "Vul je woonplaats in.")]
+		[StringLength(100, MinimumLength = 2, ErrorMessage = "Woonplaats moet tussen 2 en 100 tekens zijn.")]
+		[RegularExpression(@"^\D+$", ErrorMessage = "Woonplaats mag geen cijfers bevatten.")]
+		public string Plaats { get; set; } = string.Empty;
 
         [BindProperty]
         public string OrderOpmerkingen { get; set; } = string.Empty;
@@ -56,7 +71,12 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Bestellingen
                 return Page();
             }
 
-            var bestelling = new GeplaatsteBestelling
+			if (!ModelState.IsValid)
+			{
+				return Page();
+			}
+
+			var bestelling = new GeplaatsteBestelling
             {
                 Ordernummer = $"ORD-{DateTime.Now:yyyyMMdd-HHmmss}",
                 Besteldatum = DateTime.Now,
