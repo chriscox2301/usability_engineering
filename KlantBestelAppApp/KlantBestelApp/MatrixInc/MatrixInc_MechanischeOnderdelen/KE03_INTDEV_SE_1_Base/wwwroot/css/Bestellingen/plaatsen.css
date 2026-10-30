@@ -70,3 +70,25 @@
 .payment-option input { width: 18px; height: 18px; accent-color: var(--blue); }
 .payment-option span { display: inline-flex; align-items: center; gap: .5rem; }
 .payment-option:hover { border-color: var(--blue); box-shadow: 0 6px 18px rgba(37, 99, 235, .10); }
+
+
+/* Rode rand bij ongeldige invoervelden */
+.checkout-form input.input-validation-error,
+.checkout-form input.is-invalid {
+    border: 1px solid #dc3545;
+    background-color: white;
+    box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .15);
+}
+
+/* Foutmeldingen onder de invoervelden */
+.validation-message {
+    color: #dc3545;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+/* Algemene foutmeldingen */
+.validation-summary {
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
