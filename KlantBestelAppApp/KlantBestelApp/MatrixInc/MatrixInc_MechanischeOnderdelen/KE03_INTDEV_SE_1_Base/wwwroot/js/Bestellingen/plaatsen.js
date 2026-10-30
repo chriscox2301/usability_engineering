@@ -35,6 +35,30 @@ document.addEventListener("DOMContentLoaded", function () {
         return toonMelding(input, "");
     }
 
+    function controleerNaam() {
+        const waarde = naam.value.trim();
+
+        if (waarde === "") {
+            return toonMelding(naam, "Vul je naam in.");
+        }
+
+        if (waarde.length < 2) {
+            return toonMelding(
+                naam,
+                "Naam moet tussen 2 en 100 tekens zijn."
+            );
+        }
+
+        if (waarde.length > 100) {
+            return toonMelding(
+                naam,
+                "Naam moet tussen 2 en 100 tekens zijn."
+            );
+        }
+
+        return toonMelding(naam, "");
+    }
+
     function controleerEmail() {
         const waarde = email.value.trim();
 
@@ -74,9 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Controleer een veld wanneer de gebruiker het verlaat.
-    naam.addEventListener("blur", function () {
-        controleerVerplicht(naam, "je naam");
-    });
+    naam.addEventListener("blur", controleerNaam);
 
     email.addEventListener("blur", controleerEmail);
     adres.addEventListener("blur", function () {
@@ -93,10 +115,15 @@ document.addEventListener("DOMContentLoaded", function () {
     [naam, adres, plaats].forEach(function (input) {
         input.addEventListener("input", function () {
             if (input.classList.contains("is-invalid")) {
-                controleerVerplicht(input, 
-                    input === naam ? "je naam" :
-                    input === adres ? "je adres" : "je woonplaats"
-                );
+
+                if (input === naam) {
+                    controleerNaam();
+                } else {
+                    controleerVerplicht(
+                        input,
+                        input === adres ? "je adres" : "je woonplaats"
+                    );
+                }
             }
         });
     });
@@ -115,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Controleer alle velden voordat het formulier wordt verstuurd.
     formulier.addEventListener("submit", function (event) {
-        const naamOk = controleerVerplicht(naam, "je naam");
+        const naamOk = controleerNaam();
         const emailOk = controleerEmail();
         const adresOk = controleerVerplicht(adres, "je adres");
         const postcodeOk = controleerPostcode();
