@@ -14,7 +14,9 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Bestellingen
         public List<WinkelmandItem> Items { get; set; } = new();
         public decimal Totaal => Items.Sum(i => i.Subtotaal);
         public bool Besteld { get; set; }
-        public string LaatsteOrdernummer { get; set; } = string.Empty;
+
+		public bool GastFormulierOpen { get; set; }
+		public string LaatsteOrdernummer { get; set; } = string.Empty;
         public string? Foutmelding { get; set; }
 
         [BindProperty]
@@ -47,7 +49,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Bestellingen
 		public string Plaats { get; set; } = string.Empty;
 
         [BindProperty]
-        public string OrderOpmerkingen { get; set; } = string.Empty;
+        public string? OrderOpmerkingen { get; set; }
 
         [BindProperty]
         public string Betaalmethode { get; set; } = "iDEAL";
@@ -64,7 +66,9 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Bestellingen
 
         public IActionResult OnPost()
         {
-            Items = HttpContext.Session.HaalObject<List<WinkelmandItem>>(WinkelmandSleutel) ?? new List<WinkelmandItem>();
+			GastFormulierOpen = true;
+
+			Items = HttpContext.Session.HaalObject<List<WinkelmandItem>>(WinkelmandSleutel) ?? new List<WinkelmandItem>();
 
             if (!Items.Any())
             {

@@ -59,7 +59,8 @@ else
                 <a class="button secondary login-button" asp-page="/Account/Inloggen" asp-route-returnUrl="/Bestellingen/Betalen"><i data-lucide="log-in"></i> Inloggen</a>
             </section>
 
-            <details class="card checkout-card guest-dropdown">
+            <details class="card checkout-card guest-dropdown"
+                     open="@(Model.GastFormulierOpen ? "open" : null)">
                 <summary>
                     <h3><i data-lucide="user-round"></i> Bestellen als gast</h3>
                     <i class="chevron" data-lucide="chevron-down"></i>

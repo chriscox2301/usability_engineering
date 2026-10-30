@@ -73,8 +73,8 @@
 
 
 /* Rode rand bij ongeldige invoervelden */
-.checkout-form .input-validation-error,
-.checkout-form .is-invalid {
+.checkout-form input.input-validation-error,
+.checkout-form input.is-invalid {
     border: 1px solid #dc3545;
     background-color: white;
     box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .15);
