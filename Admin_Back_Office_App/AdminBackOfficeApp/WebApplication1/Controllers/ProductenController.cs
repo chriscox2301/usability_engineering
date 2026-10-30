@@ -26,7 +26,7 @@ namespace WebApplication1.Controllers
             De parameter productRepository wordt opgeslagen in _productRepository.
             Daardoor kan elke action in deze controller dezelfde repository gebruiken.
         */
-        public ProductenController(IProductRepository productRepository)
+       
         public ProductenController(IProductRepository productRepository, ILogger<ProductenController> logger)
         {
             _productRepository = productRepository;

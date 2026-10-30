@@ -35,7 +35,7 @@ namespace WebApplication1
             });
 
             return loggerFactory.CreateLogger<DatabaseTests>();
-            return loggerFactory.CreateLogger<ProductTests>();
+           
         }
 
         // Geldig product
@@ -189,8 +189,6 @@ namespace WebApplication1
             _repoMock.Setup(r => r.GetAlleProducten()).Returns(new List<Product>());
             _repoMock.Setup(r => r.GetCategorieNamen()).Returns(new List<string>());
             _repoMock.Setup(r => r.GetLeverancierNamen()).Returns(new List<string>());
-
-            ProductenController controller = new ProductenController(_repoMock.Object);
             
 
             ProductenController controller = new ProductenController(_repoMock.Object, logger1);
