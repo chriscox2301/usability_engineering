@@ -19,7 +19,7 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Bestellingen
 
         [BindProperty]
 		[Required(ErrorMessage = "Vul je naam in.")]
-		[StringLength(100, ErrorMessage = "Je naam mag maximaal 100 tekens bevatten.")]
+		[StringLength(100, MinimumLength = 2 ,ErrorMessage = "Naam moet tussen 2 en 100 tekens zijn.")]
 		public string Naam { get; set; } = string.Empty;
 
         [BindProperty]
