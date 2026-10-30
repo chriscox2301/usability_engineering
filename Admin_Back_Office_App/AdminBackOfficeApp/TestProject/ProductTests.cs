@@ -181,6 +181,7 @@ namespace WebApplication1
         };
 
         private readonly ILogger<ProductenController> logger1;
+
         private ProductenController MaakController()
         {
             ILogger logger = MaakLogger();
