@@ -1,5 +1,7 @@
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Abstractions;
+using System.Reflection.Metadata.Ecma335;
 using WebApplication1.Interface;
 using WebApplication1.Models;
 
@@ -17,15 +19,19 @@ namespace WebApplication1.Controllers
     public class ProductenController : Controller
     {
         private readonly IProductRepository _productRepository;
+
+        private readonly ILogger<ProductenController> logger;
         /*
             Constructor:
             Deze constructor ontvangt ProductRepository via Dependency Injection.
             De parameter productRepository wordt opgeslagen in _productRepository.
             Daardoor kan elke action in deze controller dezelfde repository gebruiken.
         */
-        public ProductenController(IProductRepository productRepository)
+       
+        public ProductenController(IProductRepository productRepository, ILogger<ProductenController> logger)
         {
             _productRepository = productRepository;
+            this.logger = logger;
         }
 
         /*
@@ -44,6 +50,12 @@ namespace WebApplication1.Controllers
             // GetAlleProducten() haalt eerst alle producten uit SQL Server op.
             // AsEnumerable() maakt het mogelijk om daarna met LINQ in C# te filteren.
             var producten = _productRepository.GetAlleProducten().AsEnumerable();
+
+            logger.LogInformation(
+                "Producten opgehaald uit repository. Aantal: {Aantal}",
+                producten.Count()
+            );
+
 
             // Controleert of het zoekveld gevuld is. IsNullOrWhiteSpace voorkomt zoeken op lege tekst.
             if (!string.IsNullOrWhiteSpace(zoeken))

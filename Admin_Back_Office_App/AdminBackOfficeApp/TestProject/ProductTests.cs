@@ -35,6 +35,7 @@ namespace WebApplication1
             });
 
             return loggerFactory.CreateLogger<DatabaseTests>();
+           
         }
 
         // Geldig product
@@ -52,6 +53,7 @@ namespace WebApplication1
             };
         }
 
+    
         private bool IsValid(Product product)
         {
             ValidationContext context = new ValidationContext(product);
@@ -178,14 +180,18 @@ namespace WebApplication1
             Status = "Concept"
         };
 
+        private readonly ILogger<ProductenController> logger1;
+
         private ProductenController MaakController()
         {
+            ILogger logger = MaakLogger();
             // Nep-database: nog geen producten, lege keuzelijsten.
             _repoMock.Setup(r => r.GetAlleProducten()).Returns(new List<Product>());
             _repoMock.Setup(r => r.GetCategorieNamen()).Returns(new List<string>());
             _repoMock.Setup(r => r.GetLeverancierNamen()).Returns(new List<string>());
+            
 
-            ProductenController controller = new ProductenController(_repoMock.Object);
+            ProductenController controller = new ProductenController(_repoMock.Object, logger1);
             // TempData is nodig omdat Toevoegen een melding zet.
             controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
             return controller;
@@ -325,6 +331,8 @@ namespace WebApplication1
             Assert.True(resultaat);
             Assert.Equal(12.50m, prijs);
         }
+
+      
     }
 }
 
