@@ -10,12 +10,20 @@ using Xunit;
 
 namespace WebApplication1
 {
+
+    //Product zoeken test bevat unit testen die gaan over een product zoeken in de admin applicatie.
+    // De unit tests bevatten mocking en een logger zodat je precies ziet wat er gebeurd.
+    
+
+    //logger1 wordt aangemaakt zodat die mee gegeven kan worden aan de product controller.
     public class ProductZoekenTests
     {
-
+        
          private readonly ILogger<ProductenController> logger1;
 
     public ProductZoekenTests()
+
+            // De logger zelf wordt aangemaakt, zodat de logger gebruikt kan worden.
     {
         ILoggerFactory loggerFactory = LoggerFactory.Create(
             builder => builder.AddConsole()
@@ -24,7 +32,8 @@ namespace WebApplication1
         logger1 = loggerFactory.CreateLogger<ProductenController>();
     }
 
-
+        //bij deze test wordt getest of de zoekfunctie een bestaand product kan vinden.
+   
         [Fact]
         public void BestaandeProductnaam_GeeftProductTerug()
         {
@@ -44,7 +53,7 @@ namespace WebApplication1
                 Status = "Actief"
             };
 
-            // Mock: boots de repository na, zonder database.
+            // Mock: Geeft info aan de repository , zonder database.
             Mock<IProductRepository> mockRepository = new Mock<IProductRepository>();
 
             mockRepository
@@ -58,6 +67,8 @@ namespace WebApplication1
             ProductenController controller = new ProductenController(
                 mockRepository.Object, logger1);
 
+           
+
             // Act: zoek op de naam van het bestaande product.
             IActionResult resultaat = controller.Index(
                 "Kogellager 6204",
@@ -65,17 +76,31 @@ namespace WebApplication1
                 "Actief",
                 null);
 
+
+            //logger geeft aan wat de zoek actie is.
+            logger1.LogInformation("Product zoeken test: Zoekactie uitgevoerd. Resultaattype: {Resultaat}",
+            resultaat.GetType().Name);
+
+            // logt het resultaat van de zoekactie
+            logger1.LogInformation("Product zoeken test: Zoekactie uitgevoerd. Resultaattype: {Resultaat}",
+            resultaat.GetType().Name);
+
+
             // Assert: controleer of het product gevonden is.
             ViewResult viewResult = Assert.IsType<ViewResult>(resultaat);
 
             List<Product> producten = Assert.IsAssignableFrom<List<Product>>(
             viewResult.Model);
 
+
+            //logger geeft aan hoeveel producten zijn gevonden
+            logger1.LogInformation("Product zoeken test: Aantal gevonden producten: {Aantal}",producten.Count);
+
             Product gevondenProduct = Assert.Single(producten);
 
             Assert.Equal("Kogellager 6204", gevondenProduct.Naam);
 
-            // Controleer of de repository is aangeroepen.
+            // Controleer of de repository een keer is aangeroepen.
             mockRepository.Verify(
                 r => r.GetAlleProducten(),
                 Times.Once);
@@ -83,6 +108,7 @@ namespace WebApplication1
 
 
         [Fact]
+        //Test dat zoekt naar een niet bestaand product en checkt of je ook niks terug krijgt
         public void NietBestaandeProductnaam_GeeftGeenProductTerug()
         {
             // Arrange: maak een mock repository met een bestaand product.
@@ -113,6 +139,9 @@ namespace WebApplication1
             ProductenController controller =
                 new ProductenController(mockRepository.Object, logger1);
 
+            //Logt dat er wordt gezocht naar een niet bestand product
+            logger1.LogInformation("Niet bestaand product zoeken test: Start product zoeken. Zoekterm: {Zoekterm}","NietBestaandProduct");
+
             // Act: zoek naar een product dat niet bestaat.
             IActionResult resultaat = controller.Index(
                 "NietBestaandProduct",
@@ -120,11 +149,18 @@ namespace WebApplication1
                 "Actief",
                 null);
 
+            // Logt het resultaat van de zoekactie
+            logger1.LogInformation("Niet bestaand product zoeken test: Zoekactie uitgevoerd. Resultaattype: {Resultaat}",
+            resultaat.GetType().Name);
+
             // Assert: controleer dat er geen producten gevonden zijn.
             ViewResult viewResult = Assert.IsType<ViewResult>(resultaat);
 
             List<Product> producten =
                 Assert.IsAssignableFrom<List<Product>>(viewResult.Model);
+
+            //logt hoeveel producten zijn gevonden
+            logger1.LogInformation("Niet bestaand product zoeken test: Aantal gevonden producten: {Aantal}",producten.Count);
 
             Assert.Empty(producten);
 
