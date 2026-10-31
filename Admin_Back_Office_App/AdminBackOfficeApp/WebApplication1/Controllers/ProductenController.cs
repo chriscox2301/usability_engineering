@@ -50,15 +50,10 @@ namespace WebApplication1.Controllers
             // AsEnumerable() maakt het mogelijk om daarna met LINQ in C# te filteren.
             var producten = _productRepository.GetAlleProducten().AsEnumerable();
 
-            if (producten == _productRepository)
-            {
-                logger.LogInformation("Producten opgehaald uit repository");
-
-            }
-            else
-            {
-                logger.LogWarning("Producten ophalen uit repository gefaald");
-            } 
+            logger.LogInformation(
+                "Producten opgehaald uit repository. Aantal: {Aantal}",
+                producten.Count()
+            );
 
 
             // Controleert of het zoekveld gevuld is. IsNullOrWhiteSpace voorkomt zoeken op lege tekst.
