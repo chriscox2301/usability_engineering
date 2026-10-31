@@ -95,6 +95,13 @@
             <span class="muted"><i data-lucide="arrow-up-down"></i> Sorteer op: aanbevolen</span>
         </div>
 
+        @if (TempData["WinkelmandFoutmelding"] != null)
+        {
+            <div class="alert alert-danger">
+                <i data-lucide="alert-circle"></i>
+                @TempData["WinkelmandFoutmelding"]
+            </div>
+        }
         <div class="product-grid">
             @* PRODUCTKAARTEN
                Voor elk Product-object uit Model.Producten wordt één productkaart gemaakt.

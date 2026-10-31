@@ -65,15 +65,19 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Producten
             // Stap 1: haal opnieuw het product op. Vertrouw niet blind op gegevens uit het formulier.
             var product = _productRepository.HaalProductOpMetId(ProductId);
 
-            // Als het product niet bestaat, stuur de klant terug naar het overzicht.
-            if (product == null)
-            {
-                return RedirectToPage("/Producten/Overzicht");
-            }
+			// Als het product niet bestaat, stuur de klant terug naar het overzicht.
+			// Controleer of het product op voorraad is.
+			if (product.Voorraad <= 0)
+			{
+				TempData["WinkelmandFoutmelding"] =
+					$"Het product '{product.Naam}' is momenteel niet op voorraad en kan daarom niet aan je winkelmandje worden toegevoegd.";
 
-            // Stap 2: eenvoudige validatie.
-            // Als iemand 0 of negatief invult, maken we er 1 van.
-            if (Aantal < 1)
+				return RedirectToPage("/Producten/Detail", new { id = product.Id });
+			}
+
+			// Stap 2: eenvoudige validatie.
+			// Als iemand 0 of negatief invult, maken we er 1 van.
+			if (Aantal < 1)
             {
                 ModelState.AddModelError(nameof(Aantal), "Het aantal moet minimaal 1 zijn.");
                 Product = product;
@@ -109,8 +113,18 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Producten
                 bestaandItem.Aantal += Aantal;
             }
 
-            // Stap 5: sla de gewijzigde winkelmand terug op in Session.
-            HttpContext.Session.ZetObject(WinkelmandSleutel, winkelmand);
+			int huidigAantal = bestaandItem?.Aantal ?? 0;
+
+			if (huidigAantal + Aantal > product.Voorraad)
+			{
+				TempData["WinkelmandFoutmelding"] =
+					$"Er zijn maar {product.Voorraad} stuks van '{product.Naam}' op voorraad.";
+
+				return RedirectToPage("/Producten/Detail", new { id = product.Id });
+			}
+
+			// Stap 5: sla de gewijzigde winkelmand terug op in Session.
+			HttpContext.Session.ZetObject(WinkelmandSleutel, winkelmand);
 
             TempData["WinkelmandProductNaam"] = product.Naam;
             TempData["WinkelmandProductAantal"] = Aantal;

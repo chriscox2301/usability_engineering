@@ -78,6 +78,13 @@ else
                 <li><i data-lucide="truck"></i> Levering: <strong>@Model.Product.Levertijd</strong></li>
             </ul>
 
+            @if (TempData["WinkelmandFoutmelding"] != null)
+            {
+                <div class="alert alert-danger">
+                    <i data-lucide="alert-circle"></i>
+                    @TempData["WinkelmandFoutmelding"]
+                </div>
+            }
             <div class="buy-box">
                 <div>
                     <span class="muted">Prijs per stuk</span>

@@ -79,26 +79,47 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Producten
             // We vertrouwen niet op naam/prijs uit HTML, omdat een gebruiker HTML kan aanpassen.
             var product = _productRepository.HaalProductOpMetId(productId);
 
-            // Stap 2: als het product niet bestaat, sturen we de klant terug naar het overzicht.
-            if (product == null)
-            {
-                return RedirectToPage("/Producten/Overzicht");
-            }
+			// Stap 2: als het product niet bestaat, sturen we de klant terug naar het overzicht.
+			if (product == null)
+			{
+				return RedirectToPage("/Producten/Overzicht");
+			}
 
-            // Stap 3: eenvoudige controle op het aantal.
-            // Er is bewust geen maximum ingesteld, maar 0 of negatief mag niet.
-            if (aantal < 1)
-            {
-                aantal = 1;
-            }
+			// Controleer of het product op voorraad is.
+			if (product.Voorraad <= 0)
+			{
+				TempData["WinkelmandFoutmelding"] =
+					$"Het product '{product.Naam}' is momenteel niet op voorraad en kan daarom niet aan je winkelmandje worden toegevoegd.";
 
-            // Stap 4: haal de huidige winkelmand op uit Session.
-            // Als er nog geen winkelmand is, maken we een lege lijst aan.
-            var winkelmand = HttpContext.Session.HaalObject<List<WinkelmandItem>>("Winkelmand") ?? new List<WinkelmandItem>();
+				return RedirectToPage("/Producten/Overzicht");
+			}
 
-            // Stap 5: kijk of dit product al in de winkelmand staat.
-            // Als dat zo is, verhogen we het aantal in plaats van een dubbele regel te maken.
-            var bestaandItem = winkelmand.FirstOrDefault(item => item.ProductId == product.Id);
+			// Stap 3: eenvoudige controle op het aantal.
+			// Er is bewust geen maximum ingesteld, maar 0 of negatief mag niet.
+			if (aantal < 1)
+			{
+				aantal = 1;
+			}
+
+			// Stap 4: haal de huidige winkelmand op uit Session.
+			// Als er nog geen winkelmand is, maken we een lege lijst aan
+			var winkelmand = HttpContext.Session.HaalObject<List<WinkelmandItem>>("Winkelmand")
+							?? new List<WinkelmandItem>();
+
+			// Stap 5: kijk of dit product al in de winkelmand staat.
+			// Als dat zo is, verhogen we het aantal in plaats van een dubbele regel te maken.
+			var bestaandItem = winkelmand.FirstOrDefault(item => item.ProductId == product.Id);
+
+			// Controleer of het totaal aantal in de winkelmand niet groter is dan de voorraad.
+			int huidigAantal = bestaandItem?.Aantal ?? 0;
+
+			if (huidigAantal + aantal > product.Voorraad)
+			{
+				TempData["WinkelmandFoutmelding"] =
+					$"Er zijn maar {product.Voorraad} stuks van '{product.Naam}' op voorraad.";
+
+				return RedirectToPage("/Producten/Overzicht");
+			}
 
             if (bestaandItem == null)
             {
