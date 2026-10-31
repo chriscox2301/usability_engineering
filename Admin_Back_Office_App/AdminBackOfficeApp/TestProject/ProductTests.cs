@@ -85,7 +85,7 @@ namespace WebApplication1
 
             Assert.True(isGeldig);
         }
-        
+
         [Fact]
         public void Product_NegatievePrijs()
         {
@@ -140,7 +140,7 @@ namespace WebApplication1
 
         [Fact]
         public void Product_Prijs_Nul_Waarde() // Nul waarde is 0 NIET NULL!
-        {             
+        {
             // Arrange: een product met een null-waarde voor de prijs.
             Product product = ValidProduct();
             product.Prijs = 0m;
@@ -163,7 +163,7 @@ namespace WebApplication1
 
             Assert.False(isGeldig);
         }
-        
+
         // -----------------------------------------------------------------------------------------------------------------
         private readonly Mock<IProductRepository> _repoMock = new Mock<IProductRepository>();
         private Product ValideProduct() => new Product
@@ -221,7 +221,7 @@ namespace WebApplication1
             RedirectToActionResult redirectResult = Assert.IsType<RedirectToActionResult>(resultaat);
             Assert.Equal("Index", redirectResult.ActionName);
         }
-        
+
         [Theory]
         [InlineData(-1.00)]         // TC02
         [InlineData(0.00)]          // TC03
