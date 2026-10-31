@@ -63,7 +63,7 @@ namespace WebApplication1
 				.Setup(r => r.UpdateStatus(1, "Ingepakt"))
 				.Returns(true);
 
-			ILogger logger = MaakLogger();
+			ILogger<BestellingenController> logger = MaakLogger();
 
 			// Act
 			IActionResult resultaat =
@@ -76,11 +76,17 @@ namespace WebApplication1
 				r => r.UpdateStatus(1, "Ingepakt"),
 				Times.Once);
 
-			//Logger bericht schrijven
-			logger.LogInformation("Test geslaagd: status is succesvol gewijzigd.");
-
-
+			// Logger bericht schrijven
+			if (_repoMock.Object.UpdateStatus(1, "Ingepakt"))
+			{
+				logger.LogInformation("Test geslaagd: status is succesvol gewijzigd.");
+			}
+			else
+			{
+				logger.LogInformation("Test gefaald: status is niet succesvol gewijzigd.");
+			}
 		}
+
 		private static ILogger<BestellingenController> MaakLogger()
 		{
 			ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
