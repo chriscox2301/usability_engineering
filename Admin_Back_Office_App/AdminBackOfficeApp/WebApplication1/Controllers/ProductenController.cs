@@ -1,3 +1,4 @@
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Abstractions;
 using System.Reflection.Metadata.Ecma335;
@@ -129,6 +130,7 @@ namespace WebApplication1.Controllers
         [HttpGet]
         public IActionResult Toevoegen()
         {
+            
             // Vult ViewBag.Statussen, ViewBag.Categorieen, ViewBag.Leveranciers en ViewBag.Iconen voor dropdowns.
             // Een nieuw product mag alleen als Concept of Actief beginnen.
             VulProductFormulierKeuzes(Product.StartStatussen);

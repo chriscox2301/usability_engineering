@@ -211,15 +211,19 @@ namespace WebApplication1
         public void Toevoegen_GeldigProduct_WordtOpgeslagen()
         {
             // Arrange
+            ILogger logger = MaakLogger();
             ProductenController controller = MaakController();
             Product product = ValideProduct();
             Valideer(controller, product);
+            logger.LogInformation("TC01: start - product {Artikelnummer} met prijs {Prijs} toevoegen.", product.Artikelnummer, product.Prijs);
 
             // Act
             IActionResult resultaat = controller.Toevoegen(product);
+            logger.LogInformation("TC01: Toevoegen gaf {Resultaat} terug.", resultaat.GetType().Name);
 
             // Assert
             _repoMock.Verify(r => r.VoegProductToe(product), Times.Once);
+            logger.LogInformation("TC01: Klaar - product is opgeslagen.");
             RedirectToActionResult redirectResult = Assert.IsType<RedirectToActionResult>(resultaat);
             Assert.Equal("Index", redirectResult.ActionName);
         }
@@ -231,39 +235,66 @@ namespace WebApplication1
         public void Toevoegen_OngeldigProduct_WordtNietOpgeslagen(double prijs)
         {
             // Arrange
+            ILogger logger = MaakLogger();
             ProductenController controller = MaakController();
             Product product = ValideProduct();
             product.Prijs = (decimal)prijs;
             Valideer(controller, product);
+            logger.LogInformation("TC02/03/05: start - product toevoegen met ongeldige {Prijs} .", product.Prijs);
 
             // Act
             IActionResult resultaat = controller.Toevoegen(product);
+            logger.LogInformation("TC02/03/05: Toevoegen gaf {Resultaat} terug.", resultaat.GetType().Name);
 
             // Assert
             _repoMock.Verify(r => r.VoegProductToe(product), Times.Never);
             ViewResult view = Assert.IsType<ViewResult>(resultaat);
             Assert.Same(product, view.Model);
             Assert.True(controller.ModelState.ContainsKey(nameof(Product.Prijs)));
+            logger.LogInformation("TC02/03/05: Klaar - prijs {Prijs} werd terecht afgekeurd.", product.Prijs);
         }
 
-        // TC04
+        // TC04: de hoogst toegestane waarden liggen precies op de grens en moeten dus geaccepteerd worden.
+        [Fact]
+        public void Toevoegen_MaximaleWaarden_WordtOpgeslagen()
+        {
+            // Arrange
+            ProductenController controller = MaakController();
+            Product product = ValideProduct();
+            product.Prijs = 99999999.99m;     // hoogste prijs uit Product.cs
+            product.Voorraad = int.MaxValue;  // hoogste integer: 2.147.483.647
+            Valideer(controller, product);
+
+            // Act
+            var resultaat = controller.Toevoegen(product);
+
+            // Assert
+            _repoMock.Verify(r => r.VoegProductToe(product), Times.Once);
+            Assert.IsType<RedirectToActionResult>(resultaat);
+        }
+
+        // TC18
         [Fact]
         public void Toevoegen_ArtikelnummerBestaatAl_WordtNietOpgeslagen()
         {
             // Arrange
+            ILogger logger = MaakLogger();
             ProductenController controller = MaakController();
             _repoMock.Setup(r => r.GetAlleProducten())
                 .Returns(new List<Product> { new Product { Artikelnummer = "KL-6204" } });
             Product product = ValideProduct();
             Valideer(controller, product);
+            logger.LogInformation("TC04: start - product toevoegen met bestaand artikelnummer {Artikelnummer}.", product.Artikelnummer);
 
             // Act
             IActionResult resultaat = controller.Toevoegen(product);
+            logger.LogInformation("TC04: Toevoegen gaf {Resultaat} terug.", resultaat.GetType().Name);
 
             // Assert
             _repoMock.Verify(r => r.VoegProductToe(It.IsAny<Product>()), Times.Never);
             Assert.IsType<ViewResult>(resultaat);
             Assert.True(controller.ModelState.ContainsKey(nameof(Product.Artikelnummer)));
+            logger.LogInformation("TC04: Klaar - dubbel artikkelnummer werd terecht afgekeurd.");
         }
 
         // Unit tests Milan --------------------------------------------------------------------------------------

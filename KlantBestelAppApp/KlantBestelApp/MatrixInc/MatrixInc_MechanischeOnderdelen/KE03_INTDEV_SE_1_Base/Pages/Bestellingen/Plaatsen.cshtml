@@ -59,7 +59,8 @@ else
                 <a class="button secondary login-button" asp-page="/Account/Inloggen" asp-route-returnUrl="/Bestellingen/Betalen"><i data-lucide="log-in"></i> Inloggen</a>
             </section>
 
-            <details class="card checkout-card guest-dropdown">
+            <details class="card checkout-card guest-dropdown"
+                     open="@(Model.GastFormulierOpen ? "open" : null)">
                 <summary>
                     <h3><i data-lucide="user-round"></i> Bestellen als gast</h3>
                     <i class="chevron" data-lucide="chevron-down"></i>
@@ -67,27 +68,33 @@ else
 
                 <p class="muted">Je kunt doorgaan zonder account. Maak later een account aan om sneller je gegevens te gebruiken.</p>
 
-                <form method="post" class="checkout-form">
+                <form method="post" class="checkout-form" novalidate>
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
                     <div class="form-grid">
                         <div class="form-field">
                             <label asp-for="Naam">Naam</label>
-                            <input asp-for="Naam" placeholder="Bijv. Jan" required />
+                            <input asp-for="Naam" placeholder="Bijv. Jan" />
+                            <span asp-validation-for="Naam" class="validation-message"></span>
                         </div>
                         <div class="form-field">
                             <label asp-for="Email">E-mailadres</label>
-                            <input asp-for="Email" type="email" placeholder="naam@example.com" required />
+                            <input asp-for="Email" type="email" placeholder="naam@example.com" />
+                            <span asp-validation-for="Email" class="validation-message"></span>
                         </div>
                         <div class="form-field full">
                             <label asp-for="Adres">Adres</label>
-                            <input asp-for="Adres" placeholder="Straat en huisnummer" required />
+                            <input asp-for="Adres" placeholder="Straat en huisnummer" />
+                            <span asp-validation-for="Adres" class="validation-message"></span>
                         </div>
                         <div class="form-field">
                             <label asp-for="Postcode">Postcode</label>
-                            <input asp-for="Postcode" placeholder="1234 AB" required />
+                            <input asp-for="Postcode" placeholder="1234 AB" />
+                            <span asp-validation-for="Postcode" class="validation-message"></span>
                         </div>
                         <div class="form-field">
                             <label asp-for="Plaats">Plaats</label>
-                            <input asp-for="Plaats" placeholder="Woonplaats" required />
+                            <input asp-for="Plaats" placeholder="Woonplaats" />
+                            <span asp-validation-for="Plaats" class="validation-message"></span>
                         </div>
                         <div class="form-field full">
                             <label asp-for="OrderOpmerkingen">Order opmerkingen (optioneel)</label>
@@ -140,4 +147,9 @@ else
             <a class="button secondary account-button" asp-page="/Account/Aanmaken"><i data-lucide="user-plus"></i> Account aanmaken</a>
         </aside>
     </section>
+}
+
+@section Scripts {
+    <script src="~/js/Bestellingen/plaatsen.js"
+            asp-append-version="true"></script>
 }

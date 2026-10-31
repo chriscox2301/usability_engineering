@@ -75,7 +75,9 @@ namespace KE03_INTDEV_SE_1_Base.Pages.Producten
             // Als iemand 0 of negatief invult, maken we er 1 van.
             if (Aantal < 1)
             {
-                Aantal = 1;
+                ModelState.AddModelError(nameof(Aantal), "Het aantal moet minimaal 1 zijn.");
+                Product = product;
+                return Page();
             }
 
             // Stap 3: haal huidige winkelmand uit Session.
