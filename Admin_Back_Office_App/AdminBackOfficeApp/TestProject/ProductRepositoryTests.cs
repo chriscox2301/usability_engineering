@@ -34,7 +34,7 @@ namespace WebApplication1
             _repository = new ProductRepository(new DatabaseConnection(configuratie));
         }
 
-        // Product opslaan en ophalen - Opgehaald product heeft dezelfde gegevens
+        // TC16: Product opslaan en ophalen - Opgehaald product heeft dezelfde gegevens
         [Fact]
         public void ProductOpslaanEnOphalen_ProductHeeftDezelfdeGegevens()
         {
@@ -89,7 +89,7 @@ namespace WebApplication1
             }
         }
 
-        // Product ophalen - Id bestaat niet - Geeft null terug
+        // TC17: Product ophalen - Id bestaat niet - Geeft null terug
         [Fact]
         public void ProductOphalen_OnbekendId_GeeftNull()
         {
