@@ -34,6 +34,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return toonMelding(input, "");
     }
+    function controleerAdres() {
+        const waarde = adres.value.trim();
+
+        if (waarde === "") {
+            return toonMelding(adres, "Vul je adres in.");
+        }
+
+        if (!/\d/.test(waarde)) {
+            return toonMelding(
+                adres,
+                "Vul ook een huisnummer in, bijvoorbeeld Hoofdstraat 12."
+            );
+        }
+
+        return toonMelding(adres, "");
+    }
 
     function controleerEmail() {
         const waarde = email.value.trim();
@@ -85,8 +101,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     postcode.addEventListener("blur", controleerPostcode);
 
-    plaats.addEventListener("blur", function () {
-        controleerVerplicht(plaats, "je woonplaats");
+    adres.addEventListener("blur", controleerAdres);
+    adres.addEventListener("input", function () {
+        if (adres.value.trim() !== "" || adres.classList.contains("is-invalid")) {
+            controleerAdres();
+        }
     });
 
     // Wanneer een fout is gevonden, controleer opnieuw tijdens het typen.
@@ -117,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     formulier.addEventListener("submit", function (event) {
         const naamOk = controleerVerplicht(naam, "je naam");
         const emailOk = controleerEmail();
-        const adresOk = controleerVerplicht(adres, "je adres");
+        const adresOk = controleerAdres();
         const postcodeOk = controleerPostcode();
         const plaatsOk = controleerVerplicht(plaats, "je woonplaats");
 
