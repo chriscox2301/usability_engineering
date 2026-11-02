@@ -63,11 +63,12 @@
             @* foreach loopt door de lijst ProductenMetLageVoorraad uit AdminDashboardViewModel. *@
             @foreach (var product in Model.ProductenMetLageVoorraad)
             {
-                <div class="list-row attention-row dashboard-row-stock">
+                @* Elke rij is een link naar VoorraadController.Aanpassen(id), zodat je de voorraad direct kunt bijwerken. *@
+                <a class="list-row attention-row dashboard-row-stock dashboard-row-link" asp-controller="Voorraad" asp-action="Aanpassen" asp-route-id="@product.Id" title="Voorraad van @product.Naam aanpassen">
                     <span class="row-icon"><i data-lucide="@product.Icoon"></i></span>
                     <div><strong>@product.Naam</strong><small>@product.Artikelnummer · @product.Leverancier</small></div>
                     <span class="badge badge-warning">@product.Voorraad op voorraad</span>
-                </div>
+                </a>
             }
         </div>
     </article>
@@ -81,11 +82,12 @@
             @* foreach loopt door HogePrioriteitBestellingen; de data komt uit BestellingRepository. *@
             @foreach (var bestelling in Model.HogePrioriteitBestellingen)
             {
-                <div class="list-row attention-row dashboard-row-priority">
+                @* Elke rij is een link naar BestellingenController.Details(id). *@
+                <a class="list-row attention-row dashboard-row-priority dashboard-row-link" asp-controller="Bestellingen" asp-action="Details" asp-route-id="@bestelling.Id" title="Bestelling @bestelling.Ordernummer openen">
                     <span class="row-icon"><i data-lucide="flame"></i></span>
                     <div><strong>@bestelling.Ordernummer</strong><small>@bestelling.KlantNaam · € @bestelling.Totaal</small></div>
                     <span class="badge badge-warning">@bestelling.Prioriteit</span>
-                </div>
+                </a>
             }
         </div>
     </article>
@@ -99,11 +101,12 @@
             @* foreach loopt door de lijst NieuweBestellingen uit AdminDashboardViewModel. *@
             @foreach (var bestelling in Model.TeVerwerkenBestellingen)
             {
-                <div class="list-row dashboard-row-orders">
+                @* Elke rij is een link naar BestellingenController.Details(id). *@
+                <a class="list-row dashboard-row-orders dashboard-row-link" asp-controller="Bestellingen" asp-action="Details" asp-route-id="@bestelling.Id" title="Bestelling @bestelling.Ordernummer openen">
                     <span class="row-icon"><i data-lucide="receipt"></i></span>
                     <div><strong>@bestelling.Ordernummer</strong><small>@bestelling.KlantNaam · @bestelling.Datum</small></div>
                     <span class="badge @(bestelling.Prioriteit == "Hoog" ? "badge-warning" : "badge-soft")">@bestelling.Status</span>
-                </div>
+                </a>
             }
         </div>
     </article>
@@ -117,11 +120,12 @@
             @* foreach loopt door OpenstaandeKlachten uit AdminDashboardViewModel. *@
             @foreach (var klacht in Model.OpenstaandeKlachten)
             {
-                <div class="list-row dashboard-row-concepts">
+                @* Er is geen detailpagina voor klachten, dus elke rij linkt naar KlantenserviceController.Index. *@
+                <a class="list-row dashboard-row-concepts dashboard-row-link" asp-controller="Klantenservice" asp-action="Index" title="Klantenservice openen">
                     <span class="row-icon"><i data-lucide="headset"></i></span>
                     <div><strong>@klacht.Klachtnummer</strong><small>@klacht.KlantNaam · @klacht.Onderwerp</small></div>
-                    <a class="badge badge-soft" asp-controller="Klantenservice" asp-action="Index">@klacht.Status</a>
-                </div>
+                    <span class="badge badge-soft">@klacht.Status</span>
+                </a>
             }
         </div>
     </article>
