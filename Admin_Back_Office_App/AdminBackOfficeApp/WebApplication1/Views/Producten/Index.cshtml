@@ -81,7 +81,8 @@
         @* foreach rendert één tabelrij per Product in de lijst. *@
         @foreach (var product in Model)
         {
-            <tr>
+            @* data-href bevat de URL van ProductenController.Details(id); index.js maakt de rij daarmee klikbaar. *@
+            <tr class="product-row-link" data-href="@Url.Action("Details", "Producten", new { id = product.Id })">
                 <td><div class="product-cell"><span><i data-lucide="@product.Icoon"></i></span><div><strong>@product.Naam</strong><small>@product.Omschrijving</small></div></div></td>
                 <td>@product.Artikelnummer</td>
                 <td>@product.Categorie</td>
@@ -103,3 +104,8 @@
         </tbody>
     </table>
 </section>
+
+@section Scripts {
+    @* index.js stuurt een klik op een productrij door naar de detailpagina, behalve bij klikken op de actieknoppen. *@
+    <script src="~/js/producten/index.js" asp-append-version="true"></script>
+}
