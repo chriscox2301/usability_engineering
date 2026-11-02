@@ -137,6 +137,20 @@
 .dashboard-row-concepts { border-left: 4px solid #6f42c1; }
 .dashboard-row-priority { border-left: 4px solid var(--warning); }
 
+/* Klikbare dashboardrijen: zelfde look als een gewone list-row, met hover-feedback. */
+.dashboard-row-link {
+    color: var(--text);
+    text-decoration: none;
+    transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.dashboard-row-link:hover,
+.dashboard-row-link:focus {
+    color: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .10);
+}
+
 .dashboard-row-stock .row-icon {
     color: var(--danger);
     background: #fff;
