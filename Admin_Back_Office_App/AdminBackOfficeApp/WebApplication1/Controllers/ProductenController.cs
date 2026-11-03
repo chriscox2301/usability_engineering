@@ -1,5 +1,6 @@
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Abstractions;
 using System.Reflection.Metadata.Ecma335;
 using WebApplication1.Interface;
@@ -228,14 +229,42 @@ namespace WebApplication1.Controllers
                 heeftFout = true;
             }
 
+            // Voorraad moet een heel getal van 0 of hoger zijn. Zonder deze controle weigert SQL Server de UPDATE en crasht de pagina.
+            // De key "Voorraad" koppelt de melding aan het voorraadveld in Wijzigen.cshtml.
+            if (ModelState.TryGetValue(nameof(Product.Voorraad), out var voorraadState) && voorraadState.Errors.Count > 0 && product.Voorraad >= 0)
+            {
+                // Model binding kon de invoer niet omzetten naar een int, bijvoorbeeld bij tekst of een kommagetal.
+                ModelState.Remove(nameof(Product.Voorraad));
+                ModelState.AddModelError(nameof(Product.Voorraad), "Voorraad moet een heel getal zijn.");
+                heeftFout = true;
+            }
+            else if (product.Voorraad < 0)
+            {
+                ModelState.Remove(nameof(Product.Voorraad));
+                ModelState.AddModelError(nameof(Product.Voorraad), "Voorraad mag geen negatief getal zijn.");
+                heeftFout = true;
+            }
+
             if (heeftFout)
             {
                 VulProductFormulierKeuzes(bestaandProduct.ToegestaneStatussen());
                 return View(product);
             }
 
-            // WijzigProduct voert sp_Producten_Update uit.
-            _productRepository.WijzigProduct(product);
+            try
+            {
+                // WijzigProduct voert sp_Producten_Update uit.
+                _productRepository.WijzigProduct(product);
+            }
+            catch (SqlException ex)
+            {
+                // Vangnet: als SQL Server de wijziging toch weigert, tonen we een melding in plaats van een crash.
+                logger.LogError(ex, "Product {Id} kon niet gewijzigd worden.", product.Id);
+                ModelState.AddModelError(string.Empty, "De wijzigingen konden niet worden opgeslagen. Controleer de ingevulde gegevens en probeer het opnieuw.");
+                VulProductFormulierKeuzes(bestaandProduct.ToegestaneStatussen());
+                return View(product);
+            }
+
             TempData["Melding"] = "Productgegevens zijn bijgewerkt in SQL Server.";
             return RedirectToAction("Index");
         }
