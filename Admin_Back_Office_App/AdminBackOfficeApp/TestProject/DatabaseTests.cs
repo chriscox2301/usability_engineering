@@ -19,7 +19,7 @@ namespace WebApplication1
     */
     public class DatabaseTests
     {
-        // Test 1: kunnen we zelf een verbinding openen en een query uitvoeren?
+        // TC15 (test 1): kunnen we zelf een verbinding openen en een query uitvoeren?
         [Fact]
         public void DatabaseConnectie_Query_Werkt()
         {
@@ -42,7 +42,7 @@ namespace WebApplication1
             Assert.Equal(1, resultaat);
         }
 
-        // Test 2: werkt de controle die Program.cs bij het opstarten uitvoert?
+        // TC15 (test 2): werkt de controle die Program.cs bij het opstarten uitvoert?
         [Fact]
         public void ControleerDatabaseConnectie_DatabaseBereikbaar()
         {

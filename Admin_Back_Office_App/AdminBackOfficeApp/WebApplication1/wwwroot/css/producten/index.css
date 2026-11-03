@@ -34,6 +34,11 @@
     background: #f8fafc;
 }
 
+/* Klikbare productrij: de cursor laat zien dat de hele rij naar de detailpagina gaat. */
+.product-row-link {
+    cursor: pointer;
+}
+
 .alert {
     border-radius: 16px;
     border: 1px solid #bfdbfe;

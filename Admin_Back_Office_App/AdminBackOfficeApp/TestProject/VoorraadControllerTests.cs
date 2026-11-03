@@ -37,6 +37,7 @@ namespace WebApplication1
         }
 
 
+        // TC14: Voorraad aanpassen - Negatieve voorraad - Voorraad wordt niet opgeslagen
         [Fact]
         public void Aanpassen_NegatieveVoorraad_WordtNietOpgeslagen()
         {
@@ -71,6 +72,7 @@ namespace WebApplication1
         }
 
 
+        // TC13: Voorraad aanpassen - Geldige voorraad - Voorraad wordt opgeslagen
         [Fact]
         public void Aanpassen_GeldigeVoorraad_WordtOpgeslagen()
         {
