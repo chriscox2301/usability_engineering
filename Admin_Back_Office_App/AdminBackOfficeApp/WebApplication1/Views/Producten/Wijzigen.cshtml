@@ -48,7 +48,12 @@
         </div>
 
         <div><label asp-for="Prijs"></label><input asp-for="Prijs" class="form-control" /></div>
-        <div><label asp-for="Voorraad"></label><input asp-for="Voorraad" class="form-control" /></div>
+        <div>
+            <label asp-for="Voorraad"></label>
+            <input asp-for="Voorraad" class="form-control" />
+            @* Toont de melding die ProductenController.Wijzigen aan het veld Voorraad koppelt, bijvoorbeeld bij een negatief getal. *@
+            <span asp-validation-for="Voorraad" class="text-danger"></span>
+        </div>
 
         <div>
             <label asp-for="Status"></label>
