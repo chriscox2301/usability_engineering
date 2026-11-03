@@ -7,6 +7,16 @@
     var leveranciers = ViewBag.Leveranciers as List<string> ?? new List<string>();
     var statussen = ViewBag.Statussen as List<string> ?? new List<string>();
     var iconen = ViewBag.Iconen as List<string> ?? new List<string>();
+    var icoonNamen = new Dictionary<string, string>
+    {
+        ["package"] = "Pakket",
+        ["circle-dot"] = "Cirkel met punt",
+        ["cog"] = "Tandwiel",
+        ["bolt"] = "Bout",
+        ["wrench"] = "Moersleutel",
+        ["rotate-cw"] = "Draaipijl",
+        ["gauge"] = "Meter"
+    };
 }
 @section Styles { <link rel="stylesheet" href="~/css/producten/wijzigen.css" asp-append-version="true" /> }
 
@@ -88,3 +98,7 @@
 
     <div class="button-row"><button class="btn btn-primary" type="submit">Wijzigingen opslaan</button><a class="btn btn-light" asp-action="Index">Annuleren</a></div>
 </form>
+
+@section Scripts {
+    <script src="~/js/producten/icoon-voorbeeld.js" asp-append-version="true"></script>
+}

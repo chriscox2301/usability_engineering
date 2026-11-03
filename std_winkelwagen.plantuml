@@ -1,0 +1,55 @@
+@startuml winkelmand_std
+title State Transition Diagram – Winkelmand (Klantapp)
+hide empty description
+
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam ArrowColor #333333
+skinparam ArrowFontSize 11
+skinparam nodesep 60
+skinparam ranksep 45
+skinparam state {
+  BackgroundColor #F5F8FF
+  BorderColor #3B5BA9
+  AttributeFontSize 11
+}
+
+state Leeg
+Leeg : entry / toon "Je winkelmand is leeg"
+Leeg : Bestelling plaatsen [geen items] / –
+
+state Gevuld
+Gevuld : entry / toon items + totaalbedrag
+Gevuld : Product toevoegen [al in mand] / aantal ophogen
+Gevuld : Product toevoegen [nieuw product] / regel toevoegen
+Gevuld : Aantal aanpassen / aantal = max(1, invoer)
+Gevuld : Verwijderen [meer dan 1 regel] / regel verwijderen
+
+state "Bestelling controleren" as Controleren
+Controleren : entry / toon formulier (Plaatsen / Betalen)
+
+state controle <<choice>>
+
+' --- Start / einde ---
+[*] -right-> Leeg : Sessie start
+Leeg -up-> [*] : Sessie verloopt
+Gevuld -up-> [*] : Sessie verloopt\n/ inhoud kwijt
+
+' --- Leeg <-> Gevuld ---
+Leeg -right-> Gevuld : Product toevoegen\n/ nieuw item (min. aantal 1)
+Gevuld -left-> Leeg : Verwijderen\n[laatste regel]
+
+' --- Bestellen ---
+Gevuld -down-> Controleren : Bestelling plaatsen
+Controleren -up-> Gevuld : Terug naar\nwinkelmand
+Controleren -left-> controle : Bevestigen / betalen\n/ voorraad + status controleren
+
+controle -up-> Leeg : [alles in orde]\n/ bestelling opslaan ("Nieuw"),\nmand leegmaken, ordernummer tonen
+controle -right-> Gevuld : [voorraad onvoldoende of\nproduct niet actief]\n/ foutmelding
+
+' note right of Gevuld
+'   Winkelmand = List<WinkelmandItem> in Session
+'   Totaal = som(Prijs × Aantal)
+' end note
+@enduml
